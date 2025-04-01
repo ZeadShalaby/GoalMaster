@@ -102,13 +102,13 @@
   ),
   'stevebauman/location' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Stevebauman\\Location\\LocationServiceProvider',
-    ),
     'aliases' => 
     array (
       'Location' => 'Stevebauman\\Location\\Facades\\Location',
+    ),
+    'providers' => 
+    array (
+      0 => 'Stevebauman\\Location\\LocationServiceProvider',
     ),
   ),
   'tymon/jwt-auth' => 
