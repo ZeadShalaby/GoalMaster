@@ -1,0 +1,25 @@
+/* Dropdown Button */
+.dropbtn {
+    background-color: none;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    margin-left: 470px;
+    margin-top: -30px;
+}
+
+/* Dropdown Button */
+.dropbtnEdit {
+    background-color: none;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    margin-left: 425px;
+    margin-top: -27.7px;
+}

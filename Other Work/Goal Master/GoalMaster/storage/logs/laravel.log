@@ -1,0 +1,94 @@
+[2025-03-31 01:27:10] local.ERROR: Call to undefined method Illuminate\Routing\RouteFileRegistrar::SocketNotify() {"exception":"[object] (Error(code: 0): Call to undefined method Illuminate\\Routing\\RouteFileRegistrar::SocketNotify() at D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\routes\\api.php:104)
+[stacktrace]
+#0 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\CallableDispatcher.php(40): Illuminate\\Routing\\RouteFileRegistrar->{closure}()
+#1 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(237): Illuminate\\Routing\\CallableDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(Closure))
+#2 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(208): Illuminate\\Routing\\Route->runCallable()
+#3 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(798): Illuminate\\Routing\\Route->run()
+#4 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(141): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#5 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\app\\Http\\Middleware\\SetLocale.php(24): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#6 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): App\\Http\\Middleware\\SetLocale->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#7 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(116): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#8 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(797): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#9 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(776): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#10 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(740): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#11 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(729): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#12 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(190): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#13 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(141): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#14 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\barryvdh\\laravel-debugbar\\src\\Middleware\\InjectDebugbar.php(59): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#15 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Barryvdh\\Debugbar\\Middleware\\InjectDebugbar->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#16 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#17 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#18 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#21 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#22 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#24 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php(86): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#25 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#26 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\fideloper\\proxy\\src\\TrustProxies.php(57): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#27 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Fideloper\\Proxy\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#28 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(116): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#29 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(165): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#30 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(134): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#31 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\public\\index.php(51): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#32 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\server.php(21): require_once('D:\\\\my projects\\\\...')
+#33 {main}
+"} 
+[2025-03-31 01:27:23] local.ERROR: Call to undefined method Illuminate\Routing\RouteFileRegistrar::SocketNotify() {"exception":"[object] (Error(code: 0): Call to undefined method Illuminate\\Routing\\RouteFileRegistrar::SocketNotify() at D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\routes\\api.php:104)
+[stacktrace]
+#0 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\CallableDispatcher.php(40): Illuminate\\Routing\\RouteFileRegistrar->{closure}()
+#1 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(237): Illuminate\\Routing\\CallableDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(Closure))
+#2 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Route.php(208): Illuminate\\Routing\\Route->runCallable()
+#3 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(798): Illuminate\\Routing\\Route->run()
+#4 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(141): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#5 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\app\\Http\\Middleware\\SetLocale.php(24): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#6 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): App\\Http\\Middleware\\SetLocale->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#7 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(116): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#8 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(797): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#9 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(776): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#10 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(740): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#11 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php(729): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#12 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(190): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#13 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(141): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#14 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\barryvdh\\laravel-debugbar\\src\\Middleware\\InjectDebugbar.php(59): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#15 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Barryvdh\\Debugbar\\Middleware\\InjectDebugbar->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#16 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#17 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#18 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#19 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#20 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#21 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#22 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#23 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#24 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php(86): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#25 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#26 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\fideloper\\proxy\\src\\TrustProxies.php(57): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#27 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(180): Fideloper\\Proxy\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#28 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php(116): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#29 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(165): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#30 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(134): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#31 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\public\\index.php(51): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#32 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\server.php(21): require_once('D:\\\\my projects\\\\...')
+#33 {main}
+"} 
+[2025-03-31 01:29:07] local.DEBUG: array (
+  'username' => 'Manager Club',
+  'password' => '123456789',
+)  
+[2025-03-31 01:34:31] local.DEBUG: array (
+  'username' => 'TestUser',
+  'password' => '123456789',
+)  
+[2025-03-31 23:26:44] local.DEBUG: array (
+  'username' => 'TestUser',
+  'password' => '123456789',
+)  
+[2025-04-01 02:43:46] local.DEBUG: array (
+  'username' => 'TestUser',
+  'password' => '123456789',
+)  
+[2025-04-01 03:06:25] local.DEBUG: array (
+  'username' => 'TestUser',
+  'password' => '123456789',
+)  

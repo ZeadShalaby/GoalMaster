@@ -1,0 +1,15 @@
+nohup: ignoring input
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ........................... RUNNING
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ....................... 7.59ms DONE
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ........................... RUNNING
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ....................... 2.39ms DONE
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ........................... RUNNING
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ....................... 1.37ms DONE
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ........................... RUNNING
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ....................... 1.37ms DONE
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ........................... RUNNING
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ....................... 1.37ms DONE
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ........................... RUNNING
+  2024-11-25 10:11:03 App\Jobs\ResetOTPJob ....................... 1.18ms DONE
+  2024-11-25 10:30:21 App\Jobs\ResetOTPJob ........................... RUNNING
+  2024-11-25 10:30:21 App\Jobs\ResetOTPJob ....................... 1.43ms DONE
