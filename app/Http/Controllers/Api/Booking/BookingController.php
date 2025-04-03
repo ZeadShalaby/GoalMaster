@@ -267,10 +267,15 @@ class BookingController extends Controller
                 $operator = $request->boolean('now') ? '>=' : '<';
                 $query->whereDate('date', $operator, now());
             })
+            ->when($request->has('filter'), function ($query) use ($request) {
+                $filterValue = $request->input('filter');
+                if (in_array($filterValue, [0, 1, 2, 3, 4])) {
+                    $query->where('status', $filterValue);
+                }
+            })                      
             ->orderBy('date', 'desc')    
             ->paginate(10);
         
-
          $bookings->getCollection()->transform(function ($booking) {
             return [
                 'id' => $booking->id,
@@ -287,6 +292,7 @@ class BookingController extends Controller
                 'payment_status' => $booking->getPaymentStatus(),
                 'payment_type' => optional($booking->paymentTypes)->name,
                 'status' => $booking->status,
+                'status_name' => ServiceStatus::getDescription($booking->status),
                 'remarks' => optional($booking->service)->remarks,
                 'category' => optional($booking->service->category)->name,
             ];

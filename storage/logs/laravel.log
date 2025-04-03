@@ -10446,3 +10446,334 @@ Did you mean one of these?
 [2025-04-03 01:38:01] local.ERROR: WhatsApp message failed to send. {"error":"Client error: `POST https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/bulk/` resulted in a `400 Bad Request` response:
 {\"status\": \"fail\", \"hasError\": true, \"data\": null, \"errors\": \"template does not exist, try syncing in Template section o (truncated...)
 "} 
+[2025-04-03 03:28:33] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:28:33] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:29:52] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:37:28] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:37:58] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:40:53] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:40:53] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:41:00] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:41:00] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:41:00] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:41:37] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:41:42] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:42:54] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:42:54] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:42:57] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:43:34] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:43:34] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:43:45] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:43:45] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:46:07] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:49:19] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:50:28] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:54:18] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 03:56:12] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:03:08] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:08:47] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:11:13] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:12:21] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:14:50] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:15:01] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:18:32] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:19:40] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:19:40] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:19:45] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:19:50] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:20:05] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:20:08] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:20:34] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:21:03] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:21:03] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:21:11] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:21:23] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:21:32] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:22:38] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:22:38] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:22:50] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:22:59] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:23:06] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:23:07] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:23:18] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:23:18] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:23:27] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:23:34] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:23:43] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:26:48] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:29:58] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:31:10] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:33:22] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:34:42] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:36:29] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:36:30] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:53:46] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:58:42] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:59:21] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 04:59:43] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 05:00:15] local.ERROR: WhatsApp message failed to send. {"error":"Client error: `POST https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/bulk/` resulted in a `400 Bad Request` response:
+{\"status\": \"fail\", \"hasError\": true, \"data\": null, \"errors\": \"template does not exist, try syncing in Template section o (truncated...)
+"} 
+[2025-04-03 05:07:09] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 05:07:22] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 05:18:05] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 05:20:22] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 05:22:09] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 05:24:38] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 05:29:19] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 06:14:13] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 06:14:33] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 06:14:40] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 06:14:50] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 06:15:35] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 06:16:14] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '12345678',
+)  
+[2025-04-03 21:17:34] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 21:19:11] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 21:31:46] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
+[2025-04-03 22:22:04] local.DEBUG: array (
+  'username' => 'Ayoubbelhaj663@gmail.com',
+  'password' => '123456789',
+)  
