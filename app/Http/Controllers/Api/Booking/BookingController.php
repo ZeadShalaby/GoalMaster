@@ -11,8 +11,8 @@ use App\Enums\PaymentType;
 use App\Enums\ServiceStatus;
 use Illuminate\Http\Request;
 use App\Events\BookingCreated;
+use App\Events\UserNotfication;
 use App\Enums\ServiceVisibility;
-use App\Events\NotificationEvent;
 use App\Services\WhatsAppService;
 use App\Models\Settings\CmnBranch;
 use Illuminate\Support\Collection;
@@ -23,6 +23,7 @@ use App\Http\Requests\FilterRequest;
 use App\Models\Customer\CmnCustomer;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\TimeSlotRequest;
+use App\Notifications\UserNotification;
 use App\Models\Settings\CmnBusinessHour;
 use App\Enums\ServiceCancelPaymentStatus;
 use App\Models\Booking\SchServiceBooking;
@@ -613,6 +614,60 @@ class BookingController extends Controller
                     'longitude' => $branch->long,
                     'status' => ServiceStatus::Done
                 ]);
+
+                // $user->notify(new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
+                Notification::send($user, new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
+
+                $currentUserId = Auth::id();
+                $userstobenotified = [];
+                $users = User::where('user_type', operator: 1)->get();
+                
+                foreach ($users as $user) {
+                    if ($user->id == $currentUserId) {
+                        continue;
+                    }
+                    if ($user->is_sys_adm) {
+                        $userstobenotified[] = $user;
+                        SocketNotify($user->id, $branch->name, [
+                            'msg' => __('messages.Your booking has been confirmed'),
+                            'receiver' => $user->username,
+                            'sender' =>  $branch->name,
+                            'booking_id' => $serviceBooking,
+                            'branch_id' => $branch,
+                            'phone_number' => $user->phoneNo,
+                            'user_type' => $user->user_type,
+                            'latitude' => $branch->lat,
+                            'longitude' => $branch->long,
+                            'status' => ServiceStatus::Done
+                        ]);
+                        continue;
+                    }
+                    if ($user->sch_employee_id == $serviceId) {
+                        $userstobenotified[] = $user;
+                        $userstobenotified[] = Auth::guard('api')->user();
+                    } elseif ($user->sch_employee_id == null) {
+                        $userBranches = SecUserBranch::where('user_id', $user->id)
+                            ->where('cmn_branch_id', $serviceBranchId)
+                            ->exists();
+                        if ($userBranches) {
+                            $userstobenotified[] = $user;
+                            $userstobenotified[] = Auth::guard('api')->user();
+                        }
+                    }
+                }
+                
+                $usr = Auth::user(); // المستخدم الذي قام بالحجز
+                $userstobenotified[] = $usr; // إضافة الحاجز إلى قائمة المستلمين
+                
+                $bookingss = $bookingRepo->getServiceInvoice($serviceBookingInfo->id)->order_details;
+                
+                foreach ($bookingss as $book) {
+                    Notification::send($userstobenotified, new ServiceOrderNotification($book, $usr));
+                
+                    event(new BookingCreated($book, $userstobenotified, $usr));
+                }
+                
+
                 $this->sendBookingDetails($phoneNo, $fullName, $serviceBookingInfo, $paymentType);
                 return response()->json([
                     'status' => 'true',
