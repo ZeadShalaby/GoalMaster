@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('sch_service_bookings', function (Blueprint $table) {
-            $table->boolean('online_done')->default(false)->after('remarks');
-        });
+        if (!Schema::hasTable('sch_service_bookings')) {
+            Schema::table('sch_service_bookings', function (Blueprint $table) {
+                $table->boolean('online_done')->default(false)->after('remarks');
+            });
+        }
     }
 
     /**

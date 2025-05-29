@@ -184,7 +184,7 @@
                                                 {{ ($notification->data['message']) }}
                                             </span>
                                             @if($id)
-                                         
+
                                             <a class="details" onclick="fetchBookingDetails('{{ $id }}'); markNotificationAsRead('{{ $notification->id }}', this)">
                                                 عرض تفاصيل الحجز >>
                                             </a>
@@ -330,7 +330,7 @@
                             <div class="collapse" id="base{{ $item->id }}">
                                 <ul class="nav nav-collapse">
                                     @foreach ($menuList->where('level', 2)->where('resource_id', $item->id) as $item1)
-                                    
+
                                     <!-- for hide dott item and department item -->
                                     @if (!($item1->display_name=='Salary' || $item1->display_name=='Department') ||$item1->display_name=='forgivingGenerous')
                                     <li>
@@ -345,6 +345,27 @@
                             </div>
                         </li>
                         @endforeach
+
+                            <li class="nav-item">
+                                <a data-toggle="collapse" href="#sliderMenu" aria-expanded="false">
+                                    <i class="fas fa-sliders-h"></i>
+                                    <p>السلايدر</p>
+                                    <span class="caret"></span>
+                                </a>
+                                <div class="collapse" id="sliderMenu">
+                                    <ul class="nav nav-collapse">
+
+                                        <li>
+                                            <a href="{{ route('slider.index') }}">
+                                                <span class="sub-item" >السلايدر</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+
+
 
                     </ul>
                 </div>
@@ -453,7 +474,7 @@
     @stack('adminScripts')
 
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-    
+
     <script>
         const now = new Date();
         // import moment from 'moment';
@@ -493,7 +514,7 @@
             <span class="time">${data.created_at}</span>
         `;
             notificationListElem.prepend(notificationContent);
-            
+
         });
 
         // Listen for the BookingCreated event
@@ -504,7 +525,7 @@
             document.getElementById("notification-sound").play();
 
             // زيادة العداد
-            notificationCountElem.textContent = notificationCount + 1;           
+            notificationCountElem.textContent = notificationCount + 1;
 
             // Update the notification title
             const notificationTitleElem = document.getElementById('notification-title');
@@ -519,13 +540,13 @@
             notificationContent.innerHTML = `
                 <span class="block">${data.message}</span>
                 <a class="details" onclick="fetchBookingDetails(${data.id})">
-                عرض تفاصيل الحجز >> </a>              
+                عرض تفاصيل الحجز >> </a>
                 <span class="time">${data.created_at}</span>
             `;
 
             // إضافة حدث click لتحديث حالة الإشعار
             notificationContent.addEventListener('click', function() {
-                markNotificationAsRead(data.id); 
+                markNotificationAsRead(data.id);
                 notificationContent.classList.remove('unread'); // إزالة class "unread"
                 notificationCountElem.textContent = notificationCount; // تحديث العداد
             });
@@ -561,7 +582,7 @@
             notificationListElem.prepend(notificationContent);
         });
     </script>
-   
+
    <script>
         $(document).ready(function() {
             $('#markAllAsReadBtn').click(function() {
@@ -587,7 +608,7 @@
             });
         });
 
-     
+
 
         function fetchBookingDetails(serviceId) {
             function updateServiceStatus(data) {
@@ -694,7 +715,7 @@
                 }
             }
         }
-   
+
         function markNotificationAsRead(id, element) {
 
     fetch(`{{ route('notifications.markAsRead.one', ['id' => 'PLACEHOLDER']) }}`.replace('PLACEHOLDER', id), {
@@ -728,7 +749,7 @@
             if (element) {
                 element.closest('.notif-content').classList.remove('unread');
             }
-             oldCount  = localStorage.getItem("unreadNotifications"); 
+             oldCount  = localStorage.getItem("unreadNotifications");
              localStorage.setItem("unreadNotifications", oldCount - 1 );
 
         }
@@ -736,7 +757,7 @@
     .catch(error => console.error('Error marking notification as read:', error));
 }
 
-   
+
    </script>
 
 
@@ -745,35 +766,35 @@
     <!-- Check Notfication --->
     <script>
         'use strict';
-    
+
         let previousUnreadCount = localStorage.getItem("unreadNotifications") || 0;
         console.log(previousUnreadCount);
-        
+
         let userInteracted = false;
-    
+
         document.addEventListener("click", () => userInteracted = true, { once: true });
-    
+
         function checkForNewNotifications() {
             fetch("{{ route('notifications.count') }}")
                 .then(response => response.json())
                 .then(data => {
                     let currentUnreadCount = data.unreadCount;
-                    
+
                     if (userInteracted && currentUnreadCount > previousUnreadCount) {
                         playNotificationSound();
                         previousUnreadCount = currentUnreadCount; //? Update the previous count
                     }
-    
+
                     localStorage.setItem("unreadNotifications", currentUnreadCount);
                 })
                 .catch(error => console.error("Error fetching notifications:", error));
         }
-    
+
         function playNotificationSound() {
             const audio = new Audio('{{ asset('sounds/videoplayback.mp3') }}');
             audio.play().catch(error => console.error('Error playing sound:', error));
         }
-    
+
         setInterval(checkForNewNotifications, 1000);
     </script>
 

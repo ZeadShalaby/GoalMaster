@@ -40,6 +40,8 @@ Route::group(['middleware' => ['api', 'setLocale' ]], function () {
     
     Route::group(['middleware' => ['jwt.auth:api'],'prefix' => "user"], function () {
             Route::get('/profile', [AuthController::class, 'profile']);
+            Route::delete('/delete', [AuthController::class, 'deleteAccount']);
+
             Route::post('/change-password-user',[AuthController::class,'changePasswordUser']);
             // ? user info 
             Route::post('/update', [ProfileController::class, 'UpdateProfile']);
@@ -61,6 +63,9 @@ Route::group(['middleware' => ['api', 'setLocale' ]], function () {
             Route::post('/store-booking',[BookingController::class, 'saveBooking']);
             Route::post('/update-booking',[BookingController::class, 'updateBooking']);
             Route::post('/cancel-booking',[BookingController::class, 'cancelBooking']);
+            Route::post('/get-info', [BookingController::class, 'getBookingInfo']);
+  
+
         });
 
         Route::group(['prefix' => "notifications"], function () {
@@ -70,6 +75,7 @@ Route::group(['middleware' => ['api', 'setLocale' ]], function () {
         });
         Route::group(['prefix' => "card"], function () {
             Route::post('/charge', [ChargeController::class, 'chargeCard']);
+            Route::post('/balance', [AuthController::class, 'Balance']);
         });
 
 
@@ -85,6 +91,8 @@ Route::group(['middleware' => ['api', 'setLocale' ]], function () {
         Route::post('/timeslot', [BookingController::class, 'getServiceTimeSlot']);
         Route::get('/customers',[ListController::class , 'customersList'])->middleware('jwt.auth:api','manager');
         Route::get('/service-status',[ListController::class , 'serviceStatusList'])->middleware('jwt.auth:api','manager');
+        //slider
+        Route::get('/slider',[ListController::class , 'getSlider']);
     });
 
     Route::group(['middleware' => ['jwt.auth:api','manager'],'prefix'=>'manager'], function () {
@@ -106,7 +114,6 @@ Route::group(['middleware' => ['api', 'setLocale' ]], function () {
         ];
     
         try {
-            // $response = Http::post('http://127.0.0.1:3000/send-message', $data);
             SocketNotify(99, 'Admin', ['msg' => 'Hello! This is a private message.' , 'sender' => 'Admin']);
 
             return response()->json([
@@ -123,6 +130,7 @@ Route::group(['middleware' => ['api', 'setLocale' ]], function () {
     });
     
 });
+Route::post('/get-service-info', [BookingController::class, 'getServiceList']);
 
 
 

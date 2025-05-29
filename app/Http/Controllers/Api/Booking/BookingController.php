@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api\Booking;
 
+use App\Models\Services\SchServices;
 use Exception;
 use Carbon\Carbon;
 use ErrorException;
 use App\Models\User;
+use App\Enums\UserType;
 use App\Enums\PaymentFor;
 use App\Enums\PaymentType;
 use App\Enums\ServiceStatus;
@@ -61,8 +63,8 @@ class BookingController extends Controller
     private function getDataInfo($booking_id)
     {
         $booking = SchServiceBooking::where('id', $booking_id)
-        ->with('branch', 'branch.zone', 'service', 'paymentTypes', 'service.category')
-        ->first();
+            ->with('branch', 'branch.zone', 'service', 'paymentTypes', 'service.category')
+            ->first();
 
         if (!$booking) {
             return response()->json(['status' => 'false', 'message' => 'Booking not found'], 404);
@@ -70,6 +72,7 @@ class BookingController extends Controller
 
         $formattedBooking = [
             'id' => $booking->id,
+            'cmn_customer_id' =>$booking->cmn_customer_id,
             'branch' => optional($booking->branch)->name,
             'address' => optional($booking->branch)->address,
             'latitude' => optional($booking->branch)->lat,
@@ -102,7 +105,7 @@ class BookingController extends Controller
             $this->whatsAppService->sendMessage($phoneNo, $fullName, $book);
         }
     }
-    
+
     /**
      * ?Retrieve all bookings within the specified date and time range.
      */
@@ -145,7 +148,7 @@ class BookingController extends Controller
             ->get();
     }
 
-    
+
     /**
      * ?Generate all time slots in a 24-hour day (00:00 - 23:59).
      */
@@ -159,7 +162,7 @@ class BookingController extends Controller
         }
         return $allHours;
     }
-    
+
     /**
      * ? Filter available time slots by excluding booked ones.
      */
@@ -172,15 +175,6 @@ class BookingController extends Controller
             for ($date = Carbon::parse($booking_start); $date->lte(Carbon::parse($booking_end)); $date->addDay()) {
                 $dateStr = $date->format('Y-m-d');
 
-                $hasBookingsInPeriod = isset($bookedSlots[$dateStr]) && $bookedSlots[$dateStr]->contains(function ($booking) use ($start_time, $end_time) {
-                    return ($booking->start_time >= $start_time && $booking->start_time < $end_time) ||
-                        ($booking->end_time > $start_time && $booking->end_time <= $end_time);
-                });
-
-                if ($hasBookingsInPeriod) {
-                    continue;
-                }
-
                 $filteredSlots = array_filter($allHours, function ($slot) use ($bookedSlots, $dateStr, $start_time, $end_time) {
                     foreach ($bookedSlots[$dateStr] ?? [] as $booked) {
                         if (
@@ -192,21 +186,26 @@ class BookingController extends Controller
                     }
                     return (!$start_time || !$end_time) || ($slot['start_time'] >= $start_time && $slot['end_time'] <= $end_time);
                 });
+
                 foreach ($filteredSlots as $slot) {
-                    $availableSlots[] = [
-                        'date' => $dateStr,
-                        'start_time' => $slot['start_time'],
-                        'end_time' => $slot['end_time'],
-                        'club_id' => $field->id,
-                        'club' => $field->name,
-                        'category_id' => optional($field->schServiceCategories->first())->id,
-                        'category_name' => optional($field->schServiceCategories->first())->name, 
-                        'service_id' => optional(optional($field->schServiceCategories->first())->services->first())->id,
-                        'service_title' => optional(optional($field->schServiceCategories->first())->services->first())->title,
-                        'address' => $field->address,
-                        'latitude' => $field->lat,
-                        'longitude' => $field->long,
-                    ];
+                    foreach ($field->schServiceCategories as $category) {
+                        foreach ($category->services as $service) {
+                            $availableSlots[] = [
+                                'date' => $dateStr,
+                                'start_time' => $slot['start_time'],
+                                'end_time' => $slot['end_time'],
+                                'club_id' => $field->id,
+                                'club' => $field->name,
+                                'category_id' => $category->id,
+                                'category_name' => $category->name,
+                                'service_id' => $service->id,
+                                'service_title' => $service->title,
+                                'address' => $field->address,
+                                'latitude' => $field->lat,
+                                'longitude' => $field->long,
+                            ];
+                        }
+                    }
                 }
             }
         }
@@ -225,7 +224,7 @@ class BookingController extends Controller
 
         // Get the sliced data based on pagination
         $paginatedData = array_slice($availableSlots, $offset, $perPage);
-        
+
         // Get the actual count of items in this page
         $actualCount = count($paginatedData);
 
@@ -245,7 +244,7 @@ class BookingController extends Controller
     {
         $page = max(1, $request->get('page', 1));
         $perPage = $request->get('per_page', 10);
-        
+
         return new LengthAwarePaginator(
             $dataCollection->forPage($page, $perPage),
             $dataCollection->count(),
@@ -259,7 +258,7 @@ class BookingController extends Controller
     public function myBookings(Request $request)
     {
         $user = Auth::guard('api')->user();
-        
+
         $bookings = $user->customer->bookings()
             ->with('branch', 'branch.zone', 'service', 'paymentTypes', 'service.category')
             ->where('status', '!=', 'canceled')
@@ -272,11 +271,11 @@ class BookingController extends Controller
                 if (in_array($filterValue, [0, 1, 2, 3, 4])) {
                     $query->where('status', $filterValue);
                 }
-            })                      
-            ->orderBy('date', 'desc')    
+            })
+            ->orderBy('date', 'desc')
             ->paginate(10);
-        
-         $bookings->getCollection()->transform(function ($booking) {
+
+        $bookings->getCollection()->transform(function ($booking) {
             return [
                 'id' => $booking->id,
                 'branch' => optional($booking->branch)->name,
@@ -297,10 +296,10 @@ class BookingController extends Controller
                 'category' => optional($booking->service->category)->name,
             ];
         });
-    
+
         return response()->json(['status' => 'true', 'data' => $bookings], 200);
     }
-    
+
     // ?todo Filter available slots for booking
     public function filterBookings(FilterRequest $request)
     {
@@ -310,7 +309,7 @@ class BookingController extends Controller
         $start_time = $validated['start_time'] ?? null;
         $end_time = $validated['end_time'] ?? null;
         $cmn_branch_id = $validated['branch'] ?? null;
-        $category_id = $validated['category_id'] ?? null; 
+        $category_id = $validated['category_id'] ?? null;
 
         // Get all booked slots
         $bookedSlots = $this->getBookings($booking_start, $booking_end, $start_time, $end_time, $cmn_branch_id, $category_id);
@@ -324,7 +323,7 @@ class BookingController extends Controller
         // Paginate the results
         return $this->paginateResults($availableSlots);
     }
-  
+
     public function getServiceTimeSlot(TimeSlotRequest $request)
     {
         try {
@@ -429,14 +428,14 @@ class BookingController extends Controller
     public function saveBooking(StoreBookingRequest $request)
     {
         $validated = $request->validated();
-    
+
         $employeeId = $validated['employee_id'];
         $serviceId = $validated['service_id'];
         $serviceBranchId = $validated['branch_id'];
         $managerID = DB::table('sec_user_branches')->where('cmn_branch_id', $serviceBranchId)->first()->user_id;
         DB::beginTransaction();
         try {
-            
+
             $paymentType = $validated['payment_type'];
             $fullName = $validated['full_name'];
             $phoneNo = $validated['phone_no'];
@@ -465,7 +464,7 @@ class BookingController extends Controller
                 }
                 $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
             }
-    
+
             if ($customer !== null) {
                 $customerId = $customer->id;
             } else {
@@ -480,12 +479,12 @@ class BookingController extends Controller
                 $cstRtrn = CmnCustomer::create($saveCustomer);
                 $customerId = $cstRtrn->id;
             }
-    
+
             $exists = DB::table('manager_customer')
                 ->where('manager_id', $managerID)
                 ->where('customer_id', $customerId)
                 ->exists();
-    
+
             if (!$exists) {
                 DB::table('manager_customer')->insert([
                     'full_name' => $fullName,
@@ -493,40 +492,41 @@ class BookingController extends Controller
                     'customer_id' => $customerId,
                 ]);
             }
-    
+
             if ($customerId == 0) {
                 throw new ErrorException(__('messages.Failed to save or get customer'));
             }
-    
+
             $serviceList = [];
             $serviceTotalAmount = 0;
-    
+
             $serviceCharge = SchEmployeeService::where('sch_employee_id', $employeeId)
                 ->where('sch_service_id', $serviceId)
                 ->select('fees')->first();
 
-                
+
             $serviceStartTime = $start_time;
             $serviceEndTime = $end_time;
 
             if ($serviceCharge === null) {
                 throw new ErrorException(
-                    __('messages.The selected service is not available at the chosen time. Please select a different time.') . 
+                    __('messages.The selected service is not available at the chosen time. Please select a different time.') .
                     " [التاريخ: {$serviceDate}, من: {$serviceStartTime} إلى: {$serviceEndTime}]"
                 );
             }
-            
+
             $bookingRepo = new BookingRepository();
             if ($bookingRepo->serviceIsAvaiable($serviceId, $employeeId, $serviceDate, $serviceStartTime, $serviceEndTime, true) > 0) {
                 throw new ErrorException(
-                    __('messages.The selected service is not available at the chosen time. Please select a different time.') . 
+                    __('messages.The selected service is not available at the chosen time. Please select a different time.') .
                     " [التاريخ: {$serviceDate}, من: {$serviceStartTime} إلى: {$serviceEndTime}]"
                 );
             }
-            
-            
 
-            $serviceStatus = $paymentType == PaymentType::UserBalance ? ServiceStatus::Done : ServiceStatus::Pending;
+
+
+            $serviceStatus = $paymentType == PaymentType::UserBalance ? ServiceStatus::Done : ServiceStatus::Processing;
+
             $serviceTotalAmount += $serviceCharge->fees;
 
             $serviceList[] = [
@@ -547,17 +547,17 @@ class BookingController extends Controller
                 'remarks' => $validated['service_remarks'] ?? null,
                 'created_by' => $customerId
             ];
-        
-    
+
+
             $payableAmount = $serviceTotalAmount;
-    
+
             if ($paymentType == PaymentType::UserBalance) {
                 $userBalance = auth()->user()->balance();
                 if ($userBalance < $payableAmount) {
                     throw new ErrorException(__('messages.You do not have enough balance in your account'));
                 }
             }
-    
+
             $couponDiscount = 0;
             if (!empty($couponCode)) {
                 $couponRepo = new CouponRepository();
@@ -577,11 +577,11 @@ class BookingController extends Controller
                 'remarks' => $validated['service_remarks'] ?? null,
                 'created_by' => auth()->id()
             ]);
-    
+
             $serviceBookingInfo->serviceBookings()->attach($serviceList);
-    
+
             DB::commit();
-    
+
             if ($paymentType == PaymentType::LocalPayment) {
                 //? todo send notification to customer 
                 $this->sendBookingDetails($phoneNo, $fullName, $serviceBookingInfo , $paymentType);
@@ -599,12 +599,12 @@ class BookingController extends Controller
                     ], 400);
                 }
                 $serviceBooking = SchServiceBooking::where('sch_service_booking_info_id', $serviceBookingInfo->id)->first();
-                    $serviceBooking->update([
-                        'paid_amount' => $serviceBooking->service_amount, 
-                        'payment_status' => ServicePaymentStatus::Paid,
-                        'status' => ServiceStatus::Done, 
-                    ]);
-                    
+                $serviceBooking->update([
+                    'paid_amount' => $serviceBooking->service_amount,
+                    'payment_status' => ServicePaymentStatus::Paid,
+                    'status' => ServiceStatus::Done,
+                ]);
+
                 //? todo send notification to customer 
                 $user = $customer->user;
                 $branch = CmnBranch::find($serviceBranchId);
@@ -627,7 +627,7 @@ class BookingController extends Controller
                 $currentUserId = Auth::id();
                 $userstobenotified = [];
                 $users = User::where('user_type', operator: 1)->get();
-                
+
                 foreach ($users as $user) {
                     if ($user->id == $currentUserId) {
                         continue;
@@ -661,18 +661,18 @@ class BookingController extends Controller
                         }
                     }
                 }
-                
+
                 $usr = Auth::user(); // المستخدم الذي قام بالحجز
                 $userstobenotified[] = $usr; // إضافة الحاجز إلى قائمة المستلمين
-                
+
                 $bookingss = $bookingRepo->getServiceInvoice($serviceBookingInfo->id)->order_details;
-                
+
                 foreach ($bookingss as $book) {
                     Notification::send($userstobenotified, new ServiceOrderNotification($book, $usr));
-                
+
                     event(new BookingCreated($book, $userstobenotified, $usr));
                 }
-                
+
 
                 $this->sendBookingDetails($phoneNo, $fullName, $serviceBookingInfo, $paymentType);
                 return response()->json([
@@ -693,7 +693,7 @@ class BookingController extends Controller
     }
 
 
-        /**
+    /**
      * Summary
      * update booking service from admin panel
      * Author: Kaysar
@@ -703,53 +703,53 @@ class BookingController extends Controller
     {
         DB::beginTransaction();
         try {
-            $validated = $request->validated(); 
+            $validated = $request->validated();
             $bookingRepo = new BookingRepository();
-    
+
             $serviceCharge = SchEmployeeService::where([
                 'sch_employee_id' => $validated['sch_employee_id'],
                 'sch_service_id' => $validated['sch_service_id']
             ])->select('fees')->first();
-            
+
             if (!$serviceCharge) {
                 return response()->json(['status' => 'false',  'data' => __('messages.Service not found for this employee')], 400);
             }
-    
+
             [$serviceStartTime, $serviceEndTime] = explode('-', $validated['service_time']);
-    
+
             if ($bookingRepo->serviceIsAvaiableApi(
-                $validated['sch_service_id'], 
-                $validated['sch_employee_id'], 
-                $validated['service_date'], 
-                $serviceStartTime, 
-                $serviceEndTime, 
-                true,
-                $validated['id'],
-            ) > 0 && $validated['isForceBooking'] == 0) {
-                
-             return response()->json(['status' => 'false', 'data' => __('messages.Service is not available at this time')], 200);
-          }
-        
-    
+                    $validated['sch_service_id'],
+                    $validated['sch_employee_id'],
+                    $validated['service_date'],
+                    $serviceStartTime,
+                    $serviceEndTime,
+                    true,
+                    $validated['id'],
+                ) > 0 && $validated['isForceBooking'] == 0) {
+
+                return response()->json(['status' => 'false', 'data' => __('messages.Service is not available at this time')], 200);
+            }
+
+
             $serviceLimitation = $bookingRepo->IsServiceLimitation(
-                $validated['service_date'], 
-                $serviceStartTime, 
-                $validated['cmn_customer_id'], 
-                $validated['sch_service_id'], 
-                1, 
+                $validated['service_date'],
+                $serviceStartTime,
+                $validated['cmn_customer_id'],
+                $validated['sch_service_id'],
+                1,
                 1
             );
-    
+
             if ($serviceLimitation['allow'] < 1 && $validated['isForceBooking'] == 0) {
                 return response()->json(['status' => 'false', 'data' => $serviceLimitation['message'] . "messages.Service is not available at this time"], 200);
             }
-    
+
             $paymentStatus = match (true) {
                 $validated['paid_amount'] >= $serviceCharge->fees => ServicePaymentStatus::Paid,
                 $validated['paid_amount'] > 0 => ServicePaymentStatus::PartialPaid,
                 default => ServicePaymentStatus::Unpaid,
             };
-    
+
             SchServiceBooking::where('id', $validated['id'])->update([
                 'cmn_branch_id' => $validated['cmn_branch_id'],
                 'cmn_customer_id' => $validated['cmn_customer_id'],
@@ -768,24 +768,24 @@ class BookingController extends Controller
                 'remarks' => $validated['remarks'],
                 'updated_by' => auth()->id(),
             ]);
-    
+
             DB::commit();
-    
+
             $bookingData = $bookingRepo->getEmployeeBookingSchedule(
-                $validated['cmn_branch_id'], 
-                $validated['sch_employee_id'], 
-                0, 
-                null, 
+                $validated['cmn_branch_id'],
+                $validated['sch_employee_id'],
+                0,
+                null,
                 $validated['id']
             );
-    
+
             return response()->json(['status' => 'true', 'data' => $bookingData], 200);
         } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json(['status' => 'false', 'data' => $e->getMessage()], 400);
         }
     }
-    
+
 
     /**
      * Summary
@@ -805,7 +805,7 @@ class BookingController extends Controller
             return response()->json(['status' => 'false', 'data' => $qx], 400);
         }
     }
-    
+
     public function getServiceBookingInfo(Request $request)
     {
         try {
@@ -849,11 +849,26 @@ class BookingController extends Controller
             $validated = $request->validated();
             $bookingRepo = new BookingRepository();
             $bookingRepo->ChangeBookingStatus($validated['booking_id'], $validated['status']);
-    
+
             $formattedBooking = $this->getDataInfo($validated['booking_id']);
             return response()->json(['status' => 'true' , 'message' => __('messages.Booking status changed successfully') , 'data' => $formattedBooking], 200);
-    
+
         } catch (ErrorException | Exception $ex) {
+            return response()->json(['status' => 'false', 'message' => $ex->getMessage()], 400);
+        }
+    }
+
+    public function getBookingInfo(Request $request)
+    {
+        try{
+            $id = $request->input('id');
+            if (!$id) {return response()->json(['status' => false,'errors' => [['id' => __('messages.id is required')]]], 400); }
+            $formattedBooking = $this->getDataInfo($id);
+            if(auth()->user()->user_type == UserType::WebsiteUser && $formattedBooking['cmn_customer_id'] != auth()->user()->customer->id){
+                return response()->json(['status' => 'false', 'message' => __('messages.You are not authorized to view this booking')], 403);
+            }
+            return response()->json(['status' => 'true'  , 'data' => $formattedBooking , 'message' => __('messages.Booking data fetched successfully')], 200);
+        }catch(Exception $ex){
             return response()->json(['status' => 'false', 'message' => $ex->getMessage()], 400);
         }
     }
@@ -875,8 +890,76 @@ class BookingController extends Controller
             return response()->json(['status' => 'false', 'data' => $ex->getMessage()], 400);
         }
     }
-    
 
-    
-    
+    //getServiceInfo
+        public function getServiceList()
+    {
+        try {
+            $services = SchServices::with(['category' => function ($query) {
+                $query->select('id', 'name', 'cmn_branch_id');
+            }])
+                ->select([
+                    'id',
+                    'title',
+                    'sch_service_category_id',
+                    'visibility',
+                    'price',
+                    'duration_in_days',
+                    'duration_in_time',
+                    'time_slot_in_time',
+                    'padding_time_before',
+                    'padding_time_after',
+                    'appoinntment_limit_type',
+                    'appoinntment_limit',
+                    'minimum_time_required_to_booking_in_days',
+                    'minimum_time_required_to_booking_in_time',
+                    'minimum_time_required_to_cancel_in_days',
+                    'minimum_time_required_to_cancel_in_time',
+                    'remarks',
+                    'created_at'
+                ])
+                ->latest('created_at')
+                ->get();
+
+            $data = $services->map(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'category' => $service->category->name ?? '',
+                    'title' => $service->title,
+                    'image_url' => $service->getFirstMediaUrl('services') ?: asset('img/ball.png'),
+                    'sch_service_category_id' => $service->sch_service_category_id,
+                    'visibility' => $service->visibility,
+                    'price' => $service->price,
+                    'duration_in_days' => $service->duration_in_days,
+                    'duration_in_time' => $service->duration_in_time,
+                    'time_slot_in_time' => $service->time_slot_in_time,
+                    'padding_time_before' => $service->padding_time_before,
+                    'padding_time_after' => $service->padding_time_after,
+                    'appoinntment_limit_type' => $service->appoinntment_limit_type,
+                    'appoinntment_limit' => $service->appoinntment_limit,
+                    'minimum_time_required_to_booking_in_days' => $service->minimum_time_required_to_booking_in_days,
+                    'minimum_time_required_to_booking_in_time' => $service->minimum_time_required_to_booking_in_time,
+                    'minimum_time_required_to_cancel_in_days' => $service->minimum_time_required_to_cancel_in_days,
+                    'minimum_time_required_to_cancel_in_time' => $service->minimum_time_required_to_cancel_in_time,
+                    'remarks' => $service->remarks,
+                    'branch_id' => $service->category->cmn_branch_id ?? null,
+                ];
+            });
+
+            return $this->apiResponse([
+                'status' => 'success',
+                'data' => $data
+            ], 200);
+
+        } catch (\Exception $e) {
+            \Log::error('Service List Error: ' . $e->getMessage());
+            return $this->apiResponse([
+                'status' => 'error',
+                'message' => __('Failed to retrieve service list')
+            ], 500);
+        }
+    }
+
+
+
 }    

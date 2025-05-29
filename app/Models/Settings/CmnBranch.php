@@ -7,9 +7,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Services\SchServiceCategory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class CmnBranch extends Model
+class CmnBranch extends Model implements    HasMedia
 {
+   use InteractsWithMedia ;
     protected $fillable = [
         'id',
         'name',
@@ -44,5 +47,10 @@ class CmnBranch extends Model
     public function zone()
     {
         return $this->belongsTo(Zone::class, 'zone_id');
+    }
+
+    public function getImageAttribute()
+    {
+        return $this->getFirstMediaUrl('cmn_branch') ?: asset('img/ball.png');
     }
 }

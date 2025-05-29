@@ -5,7 +5,7 @@
     <div class="modal fade" id="frmModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form class="form-horizontal" id="inputForm" novalidate="novalidate">
+                <form class="form-horizontal" id="inputForm" novalidate="novalidate" enctype="multipart/form-data" >
 
                     <div class="modal-header">
                         <h5 class="modal-title">
@@ -127,6 +127,18 @@
                             </div>
                         </div>
 
+                        <div class="form-group control-group form-inline">
+                            <label class="col-md-3">{{translate('Image')}}</label>
+                            <div class="col-md-9 controls">
+                                <input type="file" id="image" name="image" accept="image/*" class="form-control input-full" />
+                                <img id="imagePreview" src="#" alt="Image Preview" style="display:none; margin-top:10px; max-height:100px; border-radius:5px;" />
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+
+
+
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">{{translate('Close')}}</button>
@@ -163,5 +175,28 @@
 </div>
 @push("adminScripts")
 <script src="{{ dsAsset('js/custom/settings/branch.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const imageInput = document.getElementById('image');
+        const imagePreview = document.getElementById('imagePreview');
+
+        if (imageInput) {
+            imageInput.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.src = '#';
+                    imagePreview.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
 @endpush
 @endsection

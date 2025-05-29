@@ -335,6 +335,21 @@
                             name: 'price',
                             title: 'Service Price'
                         },
+                        {
+                            data: 'image_url',
+                            name: 'image_url',
+                            title: 'Service Image',
+                            orderable: false,
+                            searchable: false,
+                            render: function(data, type, row) {
+                                if(data) {
+                                    return '<img src="' + data + '" alt="service image" style="width:50px; height:50px; object-fit:cover; border-radius:4px;" />';
+                                } else {
+                                    return '<img src="/img/ball.png" alt="default image" style="width:50px; height:50px; object-fit:cover; border-radius:4px;" />';
+                                }
+                            }
+                        },
+
                         // {
                         //     data: 'duration_in_days',
                         //     name: 'duration_in_days',

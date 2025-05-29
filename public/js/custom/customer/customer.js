@@ -272,7 +272,8 @@
                         {
                             data: 'name',
                             name: 'full_name',
-                            title: 'Customer Name'
+                            title: 'Customer Name',
+                            defaultContent: 'NaN'
                         },
                         // {
                         //     data: 'email',

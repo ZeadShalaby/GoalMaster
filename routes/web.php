@@ -4,6 +4,7 @@ use App\Events\BookingCreated;
 use App\Events\CardCharged;
 use App\Http\Controllers\CalenderController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Slider\SliderController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\TestEmail;
@@ -34,8 +35,11 @@ use function PHPSTORM_META\map;
 |
 */
 
+//slider
+Route::resource('slider', SliderController::class);
 
 Route::group(['middleware' => 'xssProtection'], function () {
+
 
     Route::post('charge-card', [App\Http\Controllers\cardController::class, 'chargeCard'])->name('charge-card');
 
@@ -321,6 +325,8 @@ Route::group(['middleware' => 'xssProtection'], function () {
             Route::get('get-coupon-amount-from-admin', [App\Http\Controllers\Booking\SchServiceBookingController::class, 'getCouponAmount'])->name('get-coupon-amount-from-admin');
 
             Route::get('download-service-invoice-order', [App\Http\Controllers\Booking\SchServiceBookingController::class, 'DownloadServiceOrder'])->name('download.service.invoice.order');
+
+
         });
 
 
@@ -411,10 +417,12 @@ Route::group(['middleware' => 'xssProtection'], function () {
 
             //Customer
             Route::get('customer', [\App\Http\Controllers\Customer\CustomerController::class, 'customer'])->name('customer');
-
             Route::post('customer-create', [\App\Http\Controllers\Customer\CustomerController::class, 'customerStore'])->name('customer.store');
             Route::post('customer-update', [\App\Http\Controllers\Customer\CustomerController::class, 'customerUpdate'])->name('customer.update');
             Route::post('customer-delete', [\App\Http\Controllers\Customer\CustomerController::class, 'customerDelete'])->name('customer.delete');
+
+
+
 
 
             //business holiday

@@ -1,4 +1,4 @@
-﻿(function ($) {
+(function ($) {
     "use strict";
 
     var dTable = null;
@@ -70,9 +70,17 @@
         Save: function (form) {
             if (Message.Prompt()) {
                 JsManager.StartProcessBar();
-                var jsonParam = form.serialize();
+                var formData = new FormData(form[0]);
                 var serviceUrl = "branch-save";
-                JsManager.SendJson("POST", serviceUrl, jsonParam, onSuccess, onFailed);
+                $.ajax({
+                    url: serviceUrl,
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: onSuccess,
+                    error: onFailed
+                });
 
                 function onSuccess(jsonData) {
                     if (jsonData.status == "1") {
@@ -96,9 +104,18 @@
         Update: function (form, id) {
             if (Message.Prompt()) {
                 JsManager.StartProcessBar();
-                var jsonParam = form.serialize() + "&id=" + id;
+                var formData = new FormData(form[0]);
+                formData.append('id', id);
                 var serviceUrl = "branch-update";
-                JsManager.SendJson("POST", serviceUrl, jsonParam, onSuccess, onFailed);
+                $.ajax({
+                    url: serviceUrl,
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: onSuccess,
+                    error: onFailed
+                });
 
                 function onSuccess(jsonData) {
                     if (jsonData.status == "1") {
@@ -257,6 +274,18 @@
                             data: 'address',
                             name: 'address',
                             title: 'Address'
+                        },
+                        {
+                            data: 'image_url',
+                            name: 'image',
+                            title: 'Image',
+                            width: '100px',
+                            render: function (data, type, row) {
+                                if (data) {
+                                    return '<img src="' + data + '" alt="Image" style="height: 50px; width: 50px; object-fit: cover; border-radius: 5px;" />';
+                                }
+                                return '';
+                            }
                         },
                         {
                             data: 'zone',

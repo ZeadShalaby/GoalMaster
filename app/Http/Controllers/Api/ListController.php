@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\SlidersResource;
+use App\Models\Slide;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Zone;
@@ -26,32 +28,91 @@ use App\Models\Settings\CmnBusinessHoliday;
 use App\Models\Employee\SchEmployeeSchedule;
 use App\Http\Repository\Booking\BookingRepository;
 use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
+use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
 
 class ListController extends Controller
 {
-    public function getZonelist()
-    {
-       try{
-         $zones = Zone::all();
-         return response()->json(['status' => 'true', 'data' => $zones], 200);
-       }catch(\Exception $e){
-           return response()->json(['status' => 'false', 'message' => $e->getMessage()], 500);
+  public function getZonelist()
+  {
+      try {
+          $user = $this->getAuthenticatedUser();
+          $zones = $this->getZonesForUser($user);
+
+          return response()->json(['status' => true,'data' => $zones], 200);
+      } catch (\Exception $e) {
+          return response()->json(['status' => false,'message' => $e->getMessage()], 500);
       }
+  }
+
+  /**
+   * Get the authenticated user from the bearer token (if valid).
+   */
+  private function getAuthenticatedUser()
+  {
+      if ($token = request()->bearerToken()) {
+          try {
+              return JWTAuth::setToken($token)->authenticate();
+          } catch (\Exception $e) {
+              // Token invalid or expired
+          }
+      }
+      return null;
+  }
+
+  /**
+   * Return zones based on the user's type.
+   */
+  private function getZonesForUser($user)
+  {
+      // If the user is an Owner, return only zones with their clubs
+      if ($user && $user->user_type == 1) {
+          $zoneIds = CmnBranch::where('created_by', $user->id)
+                         ->distinct()
+                         ->pluck('zone_id');
+
+          return Zone::whereIn('id', $zoneIds)->get();
+      }
+
+      // Otherwise, return all zones
+      return Zone::all();
+  }
+
+
+  public function getClubList(ZoneRequest $request)
+  {
+        try {
+            $validated = $request->validated();
+            $zoneId = $validated['zone'] ?? null;
+
+            $user = $this->getAuthenticatedUser();
+
+            $clubs = $this->getClubsFiltered($zoneId, $user);
+
+            $data = $clubs->map(function ($club) {
+                return array_merge(
+                    $club->toArray(),
+                    ['image' => $club->getFirstMediaUrl('cmn_branch') ?: asset('img/ball.png')]
+                );
+            });
+
+            return response()->json(['status' => true, 'data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 
-    public function getClubList(ZoneRequest $request)
+  
+    /**
+     * Filter clubs based on zone and user ownership.
+     */
+    private function getClubsFiltered($zoneId, $user)
     {
-        try{
-            $validated = $request->validated();
-            $zone_id = $validated['zone'] ?? null;
-            $clubs = CmnBranch::query()
-                ->when($zone_id, function ($query) use ($zone_id) {
-                    $query->where('zone_id', $zone_id);
-                })->get();
-            return response()->json(['status' => 'true', 'data' => $clubs], 200);
-        }catch(\Exception $e){
-            return response()->json(['status' => 'false', 'message' => $e->getMessage()], 500);
-        }
+        return CmnBranch::query()
+            ->when($zoneId, fn($query) => $query->where('zone_id', $zoneId))
+            ->when($user && $user->user_type == 1, fn($query) => $query->where('created_by', $user->id))
+            ->get();
     }
 
     public function getCategoryList(CategoryRequest $request)
@@ -94,7 +155,7 @@ class ListController extends Controller
             return response()->json(['status' => 'false', 'message' => $e->getMessage()], 500);
         }
     }
-    
+
     public function getBookingList(CategoryRequest $request)
     {
         try {
@@ -136,21 +197,32 @@ class ListController extends Controller
  public function serviceStatusList()
  {
     try {
-        $statuses = ServiceStatus::asArray(); 
+        $statuses = ServiceStatus::asArray();
 
         $formattedStatuses = collect($statuses)->map(function ($value, $key) {
             return [
                 'id' => $value,
-                'name_en' => $key, 
-                'name_ar' => __(ServiceStatus::getDescription($value)), 
+                'name_en' => $key,
+                'name_ar' => __(ServiceStatus::getDescription($value)),
             ];
-        })->values(); 
+        })->values();
 
         return response()->json(['status' => 'true', 'data' => $formattedStatuses], 200);
     } catch (Exception $ex) {
         return response()->json(['status' => 'false', 'message' => $ex->getMessage()], 500);
-    }    
+    }
    }
+
+   //getSlider
+    public function getSlider()
+    {
+
+              $sliders = Slide::where('status', 'active')->latest()->get();
+                return response()->json(['status' => 'true', 'data' => SlidersResource::collection($sliders)], 200);
+
+
+    }
+
 
  }
 

@@ -13,17 +13,19 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('booking_payment_tolerances', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('booking_id');
-            $table->decimal('allowed_amount', 10, 2);
-            $table->unsignedBigInteger('approved_by'); 
-            $table->timestamps();
+       if (!Schema::hasTable('booking_payment_tolerances')) {
+           Schema::create('booking_payment_tolerances', function (Blueprint $table) {
+               $table->id();
+               $table->unsignedBigInteger('booking_id');
+               $table->decimal('allowed_amount', 10, 2);
+               $table->unsignedBigInteger('approved_by');
+               $table->timestamps();
 
-            $table->foreign('booking_id')->references('id')->on('sch_service_bookings')->onDelete('cascade');
-            $table->foreign('approved_by')->references('id')->on('users')->onDelete('cascade');
-        
-        });
+               $table->foreign('booking_id')->references('id')->on('sch_service_bookings')->onDelete('cascade');
+               $table->foreign('approved_by')->references('id')->on('users')->onDelete('cascade');
+
+           });
+        }
     }
 
     /**

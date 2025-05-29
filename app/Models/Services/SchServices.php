@@ -4,9 +4,13 @@ namespace App\Models\Services;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class SchServices extends Model
+class SchServices extends Model implements    HasMedia
 {
+    use InteractsWithMedia ;
+
     protected $fillable = [
         'id',
         'title',
@@ -33,5 +37,10 @@ class SchServices extends Model
     public function category()
     {
         return $this->belongsTo(SchServiceCategory::class, 'sch_service_category_id');
+    }
+
+    public function getImageAttribute()
+    {
+        return $this->getFirstMediaUrl('services') ?: asset('img/ball.png');
     }
 }

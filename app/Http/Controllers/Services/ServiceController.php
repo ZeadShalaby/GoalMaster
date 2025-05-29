@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\UserManagement\SecUserBranch;
 use App\Models\Settings\CmnBranch;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use ErrorException;
 use Exception;
@@ -37,49 +38,51 @@ class ServiceController extends Controller
     public function serviceStore(Request $data)
     {
         try {
-
             $validator = Validator::make($data->all(), [
                 'title' => ['required', 'string'],
                 'price' => ['required'],
-                // 'durationTimeMinute' => ['required'],
                 'sch_service_category_id' => ['required'],
                 'minimum_time_required_to_booking_in_minute' => ['required'],
                 'minimum_time_required_to_cancel_in_minute' => ['required'],
-                'serviceimage' => 'image|mimes:jpeg,png,jpg,gif|max:512|required',
+                'serviceimage' => 'required|image|mimes:jpeg,png,jpg,gif|max:512',
             ]);
 
-            if (!$validator->fails()) {
-                $serviceImage = $data->serviceimage;
-                if ($serviceImage != null) {
-                    $serviceImage = UtilityRepository::saveFile($serviceImage, ['image/png', 'image/png', 'image/jpg', 'image/jpeg']);
-                    $data['image'] = $serviceImage;
-                }
-
-                // $paddingTimeB = $data->padding_time_before_hour . ':' . $data->padding_time_before_minute;
-                // $paddingTimeA = $data->padding_time_after_hour . ':' . $data->padding_time_after_minute;
-
-                // $duration_in_time = $data->durationTimeHour . ':' . $data->durationTimeMinute;
-                $minimum_time_required_to_booking_in_time = $data->minimum_time_required_to_booking_in_hour . ':' . $data->minimum_time_required_to_booking_in_minute;
-                $minimum_time_required_to_cancel_in_time = $data->minimum_time_required_to_cancel_in_hour . ':' . $data->minimum_time_required_to_cancel_in_minute;
-
-                $time_slot_in_time = $data->time_slot_in_time_hour . ':' . $data->time_slot_in_time_minute;
-
-
-                // $data['duration_in_time'] = $duration_in_time;
-                // $data['padding_time_before'] = $paddingTimeB;
-                // $data['padding_time_after'] = $paddingTimeA;
-                $data['time_slot_in_time'] = $time_slot_in_time;
-                $data['minimum_time_required_to_booking_in_time'] = $minimum_time_required_to_booking_in_time;
-                $data['minimum_time_required_to_cancel_in_time'] = $minimum_time_required_to_cancel_in_time;
-                $data['id']=null;
-                SchServices::create($data->all());
-                return $this->apiResponse(['status' => '1', 'data' => ''], 200);
+            if ($validator->fails()) {
+                return $this->apiResponse(['status' => '500', 'data' => $validator->errors()], 400);
             }
-            return $this->apiResponse(['status' => '500', 'data' => $validator->errors()], 400);
+
+            // Compose time fields
+            $minimum_time_required_to_booking_in_time = $data->minimum_time_required_to_booking_in_hour . ':' . $data->minimum_time_required_to_booking_in_minute;
+            $minimum_time_required_to_cancel_in_time = $data->minimum_time_required_to_cancel_in_hour . ':' . $data->minimum_time_required_to_cancel_in_minute;
+            $time_slot_in_time = $data->time_slot_in_time_hour . ':' . $data->time_slot_in_time_minute;
+
+            $dataToCreate = [
+                'title' => $data->title,
+                'price' => $data->price,
+                'sch_service_category_id' => $data->sch_service_category_id,
+                'minimum_time_required_to_booking_in_minute' => $data->minimum_time_required_to_booking_in_minute,
+                'minimum_time_required_to_cancel_in_minute' => $data->minimum_time_required_to_cancel_in_minute,
+                'time_slot_in_time' => $time_slot_in_time,
+                'minimum_time_required_to_booking_in_time' => $minimum_time_required_to_booking_in_time,
+                'minimum_time_required_to_cancel_in_time' => $minimum_time_required_to_cancel_in_time,
+                // add other needed fields here if any
+            ];
+
+            $service = SchServices::create($dataToCreate);
+
+            // Save image using Spatie Media Library
+            if ($data->hasFile('serviceimage')) {
+                $service->addMediaFromRequest('serviceimage')
+                    ->usingFileName(uniqid() . '.' . $data->file('serviceimage')->getClientOriginalExtension())
+                    ->toMediaCollection('services');
+            }
+
+            return $this->apiResponse(['status' => '1', 'data' => $service], 200);
+
         } catch (ErrorException $ex) {
-            return  $this->apiResponse(['status' => '-501', 'data' => $ex->getMessage()], 400);
-        }catch (Exception $ex) {
-            return $this->apiResponse(['status' => '501', 'data' => $ex], 400);
+            return $this->apiResponse(['status' => '-501', 'data' => $ex->getMessage()], 400);
+        } catch (Exception $ex) {
+            return $this->apiResponse(['status' => '501', 'data' => $ex->getMessage()], 400);
         }
     }
 
@@ -92,62 +95,60 @@ class ServiceController extends Controller
      */
     public function serviceUpdate(Request $data)
     {
-        try {
 
+        try {
             $validator = Validator::make($data->toArray(), [
+                'id' => ['required', 'exists:sch_services,id'],
                 'title' => ['required', 'string'],
                 'serviceimage' => 'image|mimes:jpeg,png,jpg,gif|max:512',
-                // 'durationTimeMinute' => ['required'],
                 'sch_service_category_id' => ['required'],
                 'minimum_time_required_to_booking_in_minute' => ['required'],
                 'minimum_time_required_to_cancel_in_minute' => ['required'],
             ]);
 
-            if (!$validator->fails()) {
-                // $paddingTimeBefore = $data->padding_time_before_hour . ':' . $data->padding_time_before_minute;
-                // $paddingTimeAfter = $data->padding_time_after_hour . ':' . $data->padding_time_after_minute;
-
-                // $durationTimeHour = $data->durationTimeHour . ':' . $data->durationTimeMinute;
-                $minimum_time_required_to_booking_in_time = $data->minimum_time_required_to_booking_in_hour . ':' . $data->minimum_time_required_to_booking_in_minute;
-                $minimum_time_required_to_cancel_in_time = $data->minimum_time_required_to_cancel_in_hour . ':' . $data->minimum_time_required_to_cancel_in_minute;
-
-                $time_slot_in_time = $data->time_slot_in_time_hour . ':' . $data->time_slot_in_time_minute;
-
-                $imagePath = $data->serviceimage;
-                if ($imagePath != null) {
-                    $imagePath = UtilityRepository::saveFile($imagePath, ['image/png', 'image/png', 'image/jpg', 'image/jpeg']);
-                }
-
-                $dataForUpdate = [
-                    'title' => $data->title,
-                    'sch_service_category_id' => $data->sch_service_category_id,
-                    'visibility' => $data->visibility,
-                    'price' => $data->price,
-                    // 'duration_in_days' => $data->duration_in_days,
-                    // 'duration_in_time' => $durationTimeHour,
-                    'time_slot_in_time' => $time_slot_in_time,
-                    // 'padding_time_before' => $paddingTimeBefore,
-                    // 'padding_time_after' => $paddingTimeAfter,
-                    // 'appoinntment_limit_type' => $data->appoinntment_limit_type,
-                    // 'appoinntment_limit' => $data->appoinntment_limit,
-                    'minimum_time_required_to_booking_in_days' => $data->minimum_time_required_to_booking_in_days,
-                    'minimum_time_required_to_booking_in_time' => $minimum_time_required_to_booking_in_time,
-                    'minimum_time_required_to_cancel_in_days' => $data->minimum_time_required_to_cancel_in_days,
-                    'minimum_time_required_to_cancel_in_time' => $minimum_time_required_to_cancel_in_time,
-                    'remarks'=>$data->remarks
-                ];
-                if ($imagePath != null || $imagePath != '')
-                    $dataForUpdate['image'] = $imagePath;
-
-                SchServices::where('id', $data->id)->update($dataForUpdate);
-                return $this->apiResponse(['status' => '1', 'data' => ''], 200);
+            if ($validator->fails()) {
+                return $this->apiResponse(['status' => '500', 'data' => $validator->errors()], 400);
             }
 
-            return $this->apiResponse(['status' => '500', 'data' => $validator->errors()], 400);
-        }catch (ErrorException $ex) {
-            return  $this->apiResponse(['status' => '-501', 'data' => $ex->getMessage()], 400);
+            $service = SchServices::findOrFail($data->id);
+
+            $minimum_time_required_to_booking_in_time = $data->minimum_time_required_to_booking_in_hour . ':' . $data->minimum_time_required_to_booking_in_minute;
+            $minimum_time_required_to_cancel_in_time = $data->minimum_time_required_to_cancel_in_hour . ':' . $data->minimum_time_required_to_cancel_in_minute;
+            $time_slot_in_time = $data->time_slot_in_time_hour . ':' . $data->time_slot_in_time_minute;
+
+            $dataForUpdate = [
+                'title' => $data->title,
+                'sch_service_category_id' => $data->sch_service_category_id,
+                'visibility' => $data->visibility ?? $service->visibility,
+                'price' => $data->price,
+                'time_slot_in_time' => $time_slot_in_time,
+                'minimum_time_required_to_booking_in_days' => $data->minimum_time_required_to_booking_in_days ?? $service->minimum_time_required_to_booking_in_days,
+                'minimum_time_required_to_booking_in_time' => $minimum_time_required_to_booking_in_time,
+                'minimum_time_required_to_cancel_in_days' => $data->minimum_time_required_to_cancel_in_days ?? $service->minimum_time_required_to_cancel_in_days,
+                'minimum_time_required_to_cancel_in_time' => $minimum_time_required_to_cancel_in_time,
+                'remarks' => $data->remarks ?? $service->remarks,
+            ];
+
+            // Update service fields first
+            $service->update($dataForUpdate);
+
+            // If there is a new image, replace old one
+            if ($data->hasFile('serviceimage')) {
+                // Remove old media in 'services' collection
+                $service->clearMediaCollection('services');
+
+                // Add new image
+                $service->addMediaFromRequest('serviceimage')
+                    ->usingFileName(uniqid() . '.' . $data->file('serviceimage')->getClientOriginalExtension())
+                    ->toMediaCollection('services');
+            }
+
+            return $this->apiResponse(['status' => '1', 'data' => $service], 200);
+
+        } catch (ErrorException $ex) {
+            return $this->apiResponse(['status' => '-501', 'data' => $ex->getMessage()], 400);
         } catch (Exception $ex) {
-            return $this->apiResponse(['status' => '501', 'data' => $ex], 400);
+            return $this->apiResponse(['status' => '501', 'data' => $ex->getMessage()], 400);
         }
     }
 
@@ -177,87 +178,85 @@ class ServiceController extends Controller
      */
     public function getServiceList()
     {
+        try {
+            $user = Auth::user();
+            // Determine if user can see all branches (sys admin or user_type 2)
+            $isAllBranch = $user ? ($user->is_sys_adm || $user->user_type == 2) : true;
 
-        $isAllBranch = true;
-        if (Auth()->id())
-        {
+            $baseQuery = SchServices::with(['category' => function($query) {
+                $query->select('id', 'name', 'cmn_branch_id');
+            }])
+                ->select([
+                    'id',
+                    'title',
+                    'sch_service_category_id',
+                    'visibility',
+                    'price',
+                    'duration_in_days',
+                    'duration_in_time',
+                    'time_slot_in_time',
+                    'padding_time_before',
+                    'padding_time_after',
+                    'appoinntment_limit_type',
+                    'appoinntment_limit',
+                    'minimum_time_required_to_booking_in_days',
+                    'minimum_time_required_to_booking_in_time',
+                    'minimum_time_required_to_cancel_in_days',
+                    'minimum_time_required_to_cancel_in_time',
+                    'remarks',
+                    'created_at'
+                ]);
 
-            $user = User:: where('id', Auth()->id())->first();
-            $userType =$user->user_type;
-            if (!($user->is_sys_adm || $userType  == 2)) {
-                $isAllBranch = false;
+            if (!$isAllBranch && $user) {
+                // Get user's branch IDs
+                $branchIds = SecUserBranch::where('user_id', $user->id)
+                    ->pluck('cmn_branch_id')
+                    ->toArray();
 
+                // Filter services by category branches
+                $baseQuery->whereHas('category', function($query) use ($branchIds) {
+                    $query->whereIn('cmn_branch_id', $branchIds);
+                });
             }
 
-        }
-        if ($isAllBranch) {
+            $services = $baseQuery->latest('created_at')->get();
 
-            try {
-                $data = SchServices::join('sch_service_categories', 'sch_services.sch_service_category_id', '=', 'sch_service_categories.id')
-                    ->select(
-                        'sch_service_categories.name as category',
-                        'sch_services.id',
-                        'sch_services.title',
-                        'sch_services.image',
-                        'sch_services.sch_service_category_id',
-                        'sch_services.visibility',
-                        'sch_services.price',
-                        'sch_services.duration_in_days',
-                        'sch_services.duration_in_time',
-                        'sch_services.time_slot_in_time',
-                        'sch_services.padding_time_before',
-                        'sch_services.padding_time_after',
-                        'sch_services.appoinntment_limit_type',
-                        'sch_services.appoinntment_limit',
-                        'sch_services.minimum_time_required_to_booking_in_days',
-                        'sch_services.minimum_time_required_to_booking_in_time',
-                        'sch_services.minimum_time_required_to_cancel_in_days',
-                        'sch_services.minimum_time_required_to_cancel_in_time',
-                        'sch_services.remarks'
-                    )->orderByRaw('sch_services.created_at desc')->get();
-                return $this->apiResponse(['status' => '1', 'data' => $data], 200);
-            } catch (Exception $qx) {
-                return $this->apiResponse(['status' => '403', 'data' => $qx], 400);
-            }
-        }
+            $data = $services->map(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'category' => $service->category->name ?? '',
+                    'title' => $service->title,
+                    'image_url' => $service->getFirstMediaUrl('services') ?: null,
+                    'sch_service_category_id' => $service->sch_service_category_id,
+                    'visibility' => $service->visibility,
+                    'price' => $service->price,
+                    'duration_in_days' => $service->duration_in_days,
+                    'duration_in_time' => $service->duration_in_time,
+                    'time_slot_in_time' => $service->time_slot_in_time,
+                    'padding_time_before' => $service->padding_time_before,
+                    'padding_time_after' => $service->padding_time_after,
+                    'appoinntment_limit_type' => $service->appoinntment_limit_type,
+                    'appoinntment_limit' => $service->appoinntment_limit,
+                    'minimum_time_required_to_booking_in_days' => $service->minimum_time_required_to_booking_in_days,
+                    'minimum_time_required_to_booking_in_time' => $service->minimum_time_required_to_booking_in_time,
+                    'minimum_time_required_to_cancel_in_days' => $service->minimum_time_required_to_cancel_in_days,
+                    'minimum_time_required_to_cancel_in_time' => $service->minimum_time_required_to_cancel_in_time,
+                    'remarks' => $service->remarks,
+                    'branch_id' => $service->category->cmn_branch_id ?? null,
+                ];
+            });
 
-        else
-        {
-            try {
-              $userBranch = SecUserBranch::where('user_id', Auth()->id())->select('cmn_branch_id')->get();
-          
-              $data = SchServices::join('sch_service_categories', 'sch_services.sch_service_category_id', '=', 'sch_service_categories.id')
-                  ->select(
-                      'sch_service_categories.cmn_branch_id',
-                      'sch_service_categories.name as category',
-                      'sch_services.id',
-                      'sch_services.title',
-                      'sch_services.image',
-                      'sch_services.sch_service_category_id',
-                      'sch_services.visibility',
-                      'sch_services.price',
-                      'sch_services.duration_in_days',
-                      'sch_services.duration_in_time',
-                      'sch_services.time_slot_in_time',
-                      'sch_services.padding_time_before',
-                      'sch_services.padding_time_after',
-                      'sch_services.appoinntment_limit_type',
-                      'sch_services.appoinntment_limit',
-                      'sch_services.minimum_time_required_to_booking_in_days',
-                      'sch_services.minimum_time_required_to_booking_in_time',
-                      'sch_services.minimum_time_required_to_cancel_in_days',
-                      'sch_services.minimum_time_required_to_cancel_in_time',
-                      'sch_services.remarks'
-                  )
-                  ->whereIn('sch_service_categories.cmn_branch_id', $userBranch->pluck('cmn_branch_id'))
-          
-                  ->orderByRaw('sch_services.created_at desc')->get();
-              return $this->apiResponse(['status' => '1', 'data' => $data], 200);
-          } catch (Exception $qx) {
-              return $this->apiResponse(['status' => '403', 'data' => $qx], 400);
-          }
-            
-        }
+            return $this->apiResponse([
+                'status' => 'success',
+                'data' => $data
+            ], 200);
 
+        } catch (Exception $e) {
+            Log::error('Service List Error: ' . $e->getMessage());
+            return $this->apiResponse([
+                'status' => 'error',
+                'message' => __('Failed to retrieve service list')
+            ], 500);
+        }
     }
 }

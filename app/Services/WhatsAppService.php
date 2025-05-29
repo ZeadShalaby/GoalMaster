@@ -22,7 +22,7 @@ class WhatsAppService
   {
     $this->client = new Client();
     $this->authKey = env('MSG91_AUTH_KEY');
-    $this->sender_number = env('MSG91_SENDER_NUMBER');
+    $this->sender_number = env('MSG91_SENDER_NUMBER', '218916771600');
     $this->url = 'https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/bulk/';
   }
 
@@ -115,11 +115,13 @@ class WhatsAppService
                     'messaging_product' => 'whatsapp',
                     'type' => 'template',
                     'template' => [
-                        'name' => 'booking_confirmation',
+                        'name' => 'booking',
                         'language' => [
                             'code' => 'ar',
                             'policy' => 'deterministic',
                         ],
+                        'namespace' => 'e51643b3_2ddc_458d_a96b_0d1a2f5f8afe',
+
                         'to_and_components' => [
                             [
                                 'to' => [$phoneNumber],
@@ -137,7 +139,6 @@ class WhatsAppService
         return ['success' => false, 'message' => 'Failed to send message'];
     }
   }
-
 
   public function sendOtp($phoneNumber, $otp)
   {
@@ -160,7 +161,7 @@ class WhatsAppService
                 "code" => "ar",
                 "policy" => "deterministic",
               ],
-              "namespace" => "ce6f8a16_8ddd_4e25_a0d3_28cde1005a07",
+              "namespace" => "e51643b3_2ddc_458d_a96b_0d1a2f5f8afe",
               "to_and_components" => [
                 [
                   "to" => [$phoneNumber],
