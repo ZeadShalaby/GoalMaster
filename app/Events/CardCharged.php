@@ -35,15 +35,35 @@ class CardCharged implements ShouldBroadcastNow
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
-    public function broadcastOn()
-    {
-        $channels = [];
-        foreach ($this->systemUsers as $user) {
-            $channels[] = new Channel('admin-notifications.' . $user->id);
+    // public function broadcastOn()
+    // {
+    //     $channels = [];
+    //     foreach ($this->systemUsers as $user) {
+    //         $channels[] = new Channel('admin-notifications.' . $user->id);
+    //     }
+
+    //     return $channels;
+    // }
+public function broadcastOn()
+{
+    $channels = [];
+
+    if (!$this->systemUsers || !is_iterable($this->systemUsers)) {
+        \Log::error('systemUsers is not iterable in CardCharged event');
+        return [];
+    }
+
+    foreach ($this->systemUsers as $user) {
+        if (!isset($user->id)) {
+            \Log::error('Invalid user object in CardCharged event');
+            continue;
         }
 
-        return $channels;
+        $channels[] = new Channel('admin-notifications.' . $user->id);
     }
+
+    return $channels;
+}
 
     public function broadcastWith()
     {
