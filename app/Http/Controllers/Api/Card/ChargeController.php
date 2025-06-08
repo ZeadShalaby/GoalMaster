@@ -28,10 +28,9 @@ class ChargeController extends Controller
         // Get the authenticated user
         $user = Auth::guard('api')->user();
         $validated = $request->validated();
-        
         // Find the card by its code and ensure it hasn't been charged
         $card = Card::where('code', $validated['code'])->where('is_charged', false)->first();
-        
+
         if (!$card) {
             return response()->json([
                 'status' => 'false',
@@ -43,7 +42,7 @@ class ChargeController extends Controller
         try {
             $amount = $card->group->price;
             $userId = $user->id;
-            
+
             // Update user balance
             $user->userBalance()->create([
                 'amount' => $amount,
@@ -52,6 +51,7 @@ class ChargeController extends Controller
                 'status' => 1
             ]);
 
+
             // Mark the card as charged
             // $card->is_charged = true;
             // $card->save();
@@ -59,17 +59,16 @@ class ChargeController extends Controller
             
             // Mark the card as charged
             $card->update(['is_charged' => true]);
-            
             // Notify system admins
             $systemAdmins = User::where('is_sys_adm', 1)->get();
 
             Notification::send($systemAdmins, new CardChargedNotification($card, $user));
+           
             // $systemAdmins->notify(new CardChargedNotification($card, $user));
             // Fire event
-            event(new CardCharged($systemAdmins, $card, $user));
+            // event(new CardCharged($systemAdmins, $card, $user));
             
             DB::commit();
-            
             return response()->json([
                 'status' => 'true',
                 'message' => __('messages.Card charged successfully'),
