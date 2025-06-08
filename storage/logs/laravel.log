@@ -6345,3 +6345,39 @@ Trailing data at /home/goalmasters-web/htdocs/web.goalmasters.online/public/Goal
   'username' => 'Alhadf',
   'password' => '123456788',
 )  
+[2025-06-08 11:33:28] local.DEBUG: array (
+  'username' => 'alhadf',
+  'password' => '123456789',
+)  
+[2025-06-08 11:33:43] local.DEBUG: array (
+  'username' => 'ziad',
+  'password' => '123456789',
+)  
+[2025-06-08 11:33:54] local.DEBUG: array (
+  'username' => 'alhdf',
+  'password' => '123456789',
+)  
+[2025-06-08 11:34:02] local.DEBUG: array (
+  'username' => 'alhadf',
+  'password' => '123456789',
+)  
+[2025-06-08 11:34:07] local.DEBUG: array (
+  'username' => 'alhadf',
+  'password' => '12345678',
+)  
+[2025-06-08 11:34:14] local.DEBUG: array (
+  'username' => 'alhadf',
+  'password' => '123456789',
+)  
+[2025-06-08 11:34:22] local.DEBUG: array (
+  'username' => 'ziad',
+  'password' => '123456789',
+)  
+[2025-06-08 11:50:47] local.DEBUG: array (
+  'username' => 'ziad',
+  'password' => '123456789',
+)  
+[2025-06-08 12:09:17] local.DEBUG: array (
+  'username' => 'ziad',
+  'password' => '123456789',
+)  
