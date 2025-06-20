@@ -36,6 +36,8 @@ class MonthlyBookingController extends Controller
     {
         return view('booking.forgiving-generous');
     }
+
+
     /**
      * @param Request $request
      * @return JsonResponse
@@ -48,6 +50,7 @@ class MonthlyBookingController extends Controller
                 'service_date' => ['required', 'date', 'after_or_equal:today'],
                 'id' => ['required', 'integer'],
             ]);
+          
             if (!$validator->fails()) {
             	$this->bookingRepository->cancelBookingMonthly($request->id, $request->service_date);
             	DB::commit();

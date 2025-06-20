@@ -1037,4 +1037,19 @@ class BookingRepository
             ->update(['paid_amount' => \DB::raw('service_amount') , 'online_done' => true]); 
             return true;
     }
+
+    //     public function StoreMonthlyBooking($id)
+    // {
+    //      try{
+    //         SchServiceBookingInfo::where('id',$id)
+    //             ->where('is_monthly', 0)
+    //             ->where('is_monthly_active', 0)
+    //             ->update(['is_monthly_active' => 1]);
+    //         return response()->json(['status' => '1', 'data' => 'Updated Successfully'], 200);
+    //      }catch (Exception $e) {
+    //         return response()->json(['status' => '500', 'message' => $e->getMessage()], 400);
+
+    //    }
+    // }
+
 }

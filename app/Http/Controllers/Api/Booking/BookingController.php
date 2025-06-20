@@ -548,7 +548,6 @@ class BookingController extends Controller
                 'created_by' => $customerId
             ];
 
-
             $payableAmount = $serviceTotalAmount;
 
             if ($paymentType == PaymentType::UserBalance) {
@@ -581,7 +580,6 @@ class BookingController extends Controller
             $serviceBookingInfo->serviceBookings()->attach($serviceList);
 
             DB::commit();
-
             if ($paymentType == PaymentType::LocalPayment) {
                 //? todo send notification to customer 
                 $this->sendBookingDetails($phoneNo, $fullName, $serviceBookingInfo , $paymentType);
@@ -604,10 +602,10 @@ class BookingController extends Controller
                     'payment_status' => ServicePaymentStatus::Paid,
                     'status' => ServiceStatus::Done,
                 ]);
-
+              $branch = CmnBranch::find($serviceBranchId);
+               if($customer != null){
                 //? todo send notification to customer 
                 $user = $customer->user;
-                $branch = CmnBranch::find($serviceBranchId);
                 SocketNotify($user->id, $branch->name, [
                     'msg' => __('messages.Your booking has been confirmed'),
                     'receiver' => $user->username,
@@ -623,7 +621,7 @@ class BookingController extends Controller
 
                 // $user->notify(new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
                 Notification::send($user, new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
-
+               }
                 $currentUserId = Auth::id();
                 $userstobenotified = [];
                 $users = User::where('user_type', operator: 1)->get();
