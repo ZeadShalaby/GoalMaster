@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Models\Booking\SchServiceBooking;
-use App\Models\Customer\CmnUserBalance;
 use Exception;
 use App\Models\User;
 use App\Enums\UserType;
@@ -12,16 +10,19 @@ use Illuminate\Support\Str;
 use App\Services\OTPService;
 use Illuminate\Http\Request;
 use App\Services\WhatsAppService;
+use App\Models\Settings\CmnBranch;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Customer\CmnCustomer;
-use App\Models\Booking\SchServiceBookingInfo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RgisterRequest;
 use App\Http\Requests\ValidateRequest;
+use App\Models\Customer\CmnUserBalance;
+use App\Models\Booking\SchServiceBooking;
 use App\Http\Requests\ChangePasswordRequest;
+use App\Models\Booking\SchServiceBookingInfo;
 
 class AuthController extends Controller
 {
@@ -49,6 +50,21 @@ class AuthController extends Controller
         return $token;
     }
 
+    private function GetDetails($user)
+    {
+        $zoneId = CmnBranch::where('created_by', $user->id)
+                                ->distinct()
+                                ->pluck('zone_id');
+        $clubId = CmnBranch::query()
+            ->when($zoneId, fn($query) => $query->where('zone_id', $zoneId))
+            ->when($user && $user->user_type == UserType::SystemUser, fn($query) => $query->where('created_by', $user->id))
+            ->pluck('id');
+        return [
+            'zone_id' => $zoneId,
+            'club_id' => $clubId,
+        ];
+    }
+
 
     public function login(LoginRequest $request)
     {
@@ -60,6 +76,11 @@ class AuthController extends Controller
             $token = Auth::guard('api')->attempt($credentials);
             if(!$token){return response()->json(['status' => "false", 'message' => __('apiValidation.Something went wrong')], 400);}
             $user = Auth::guard('api')->user(); //UserType::getById($user->user_type)
+            if($user->user_type != UserType::SystemUser){
+                $details = $this->GetDetails($user);
+                $user->zone_id = $details['zone_id'];
+                $user->club_id = $details['club_id'];
+            } 
             return response()->json(["status"=>"true", "data" => ["user" => $user,"token" => $token]],200);  
         }catch(\Exception $e){
             return response()->json(['status'=> "false",'errNum'=> $e->getCode(),'message'=> $e->getMessage(), ],500);

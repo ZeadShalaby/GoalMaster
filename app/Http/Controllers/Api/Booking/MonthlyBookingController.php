@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\UserManagement\SecUserBranch;
+use App\Models\Booking\SchServiceBookingInfo;
 use App\Models\Booking\BookingPaymentTolerance;
 use App\Http\Repository\Booking\BookingRepository;
 use App\Http\Requests\UpdateMonthlyBookingRequest;
@@ -29,6 +30,7 @@ class MonthlyBookingController extends Controller
      */
     public function updateMonthlyBooking(UpdateMonthlyBookingRequest $request)
     {
+        
         DB::beginTransaction();
         try {
             $this->bookingRepository->cancelBookingMonthly($request->id, $request->service_date);
@@ -41,6 +43,15 @@ class MonthlyBookingController extends Controller
         }
     }
 
+    // public function StoreMonthlyBooking($id = null)
+    // {
+    //       if ($id === null) {
+    //           return response()->json(['status' => '500', 'msg' => 'Invalid ID'], 400);
+    //       }
+    //       $this->bookingRepository->StoreMonthlyBooking($id = null);
+    //       return response()->json(['status' => '1', 'msg' => 'Success'], 200);
+    // }
+        
 	
 	/**
 	 * @param Request $request

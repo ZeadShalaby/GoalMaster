@@ -2,23 +2,26 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\SlidersResource;
-use App\Models\Slide;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Zone;
+use App\Models\Slide;
+use App\Enums\UserType;
 use App\Enums\ServiceStatus;
 use Illuminate\Http\Request;
 use App\Models\Settings\CmnZone;
 use App\Http\Requests\ZoneRequest;
 use App\Models\Settings\CmnBranch;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use App\Models\Customer\CmnCustomer;
 use App\Models\Employee\SchEmployee;
 use App\Models\Services\SchServices;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ServiceRequest;
 use App\Http\Requests\BookListRequest;
 use App\Http\Requests\CategoryRequest;
+use App\Http\Resources\SlidersResource;
 use App\Models\Settings\CmnBusinessHour;
 use App\Models\Employee\SchEmployeeOffday;
 use App\Http\Repository\DateTimeRepository;
@@ -28,8 +31,6 @@ use App\Models\Settings\CmnBusinessHoliday;
 use App\Models\Employee\SchEmployeeSchedule;
 use App\Http\Repository\Booking\BookingRepository;
 use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
-use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class ListController extends Controller
@@ -67,7 +68,7 @@ class ListController extends Controller
   private function getZonesForUser($user)
   {
       // If the user is an Owner, return only zones with their clubs
-      if ($user && $user->user_type == 1) {
+      if ($user && $user->user_type == UserType::SystemUser) {
           $zoneIds = CmnBranch::where('created_by', $user->id)
                          ->distinct()
                          ->pluck('zone_id');
@@ -111,7 +112,7 @@ class ListController extends Controller
     {
         return CmnBranch::query()
             ->when($zoneId, fn($query) => $query->where('zone_id', $zoneId))
-            ->when($user && $user->user_type == 1, fn($query) => $query->where('created_by', $user->id))
+            ->when($user && $user->user_type == UserType::SystemUser, fn($query) => $query->where('created_by', $user->id))
             ->get();
     }
 
