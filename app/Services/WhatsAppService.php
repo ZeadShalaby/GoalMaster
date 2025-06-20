@@ -156,7 +156,7 @@ class WhatsAppService
             "messaging_product" => "whatsapp",
             "type" => "template",
             "template" => [
-              "name" => "otp",
+              "name" => "otp_goalmaster",
               "language" => [
                 "code" => "ar",
                 "policy" => "deterministic",
