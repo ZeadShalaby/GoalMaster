@@ -1,0 +1,392 @@
+[2025-06-16 19:44:50] local.DEBUG: array (
+  'username' => 'Ahmed',
+  'password' => '123456789',
+)  
+[2025-06-16 19:49:46] local.DEBUG: array (
+  'username' => 'Ahmed',
+  'password' => '123456789',
+)  
+[2025-06-16 19:50:22] local.DEBUG: array (
+  'username' => 'Ahmed',
+  'password' => '123456789',
+)  
+[2025-06-16 19:50:24] local.DEBUG: array (
+  'username' => 'Ahmed',
+  'password' => '123456789',
+)  
+[2025-06-16 19:50:50] local.DEBUG: array (
+  'username' => 'Ahmed',
+  'password' => '123456789',
+)  
+[2025-06-16 21:47:30] local.DEBUG: array (
+  'username' => 'Ahmed',
+  'password' => '123456789',
+)  
+[2025-06-17 02:40:50] local.INFO: Broadcasting [bookingChanged] on channels [admin-notifications.1, admin-notifications.96, admin-notifications.98] with payload:
+{
+    "message": " \u062a\u0645 \u062a\u063a\u064a\u064a\u0631 \u062d\u0627\u0644\u0629 \u0627\u0644\u062d\u062c\u0632 \u0627\u0644\u062e\u0627\u0635 \u0628\u0627\u064a\u0648\u0628 \u0628\u0627\u0644\u062d\u0627\u062c \u0625\u0644\u064a \u062d\u0627\u0644\u0629 \u0625\u0644\u063a\u0627\u0621 \u0628\u0648\u0627\u0633\u0637\u0629 \u0627\u064a\u0648\u0628 \u0628\u0627\u0644\u062d\u0627\u062c",
+    "id": 434,
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-06-19 16:23:12] local.DEBUG: array (
+  'username' => 'Ahmed',
+  'password' => '123456789',
+)  
+[2025-06-19 16:23:37] local.DEBUG: array (
+  'username' => 'ziad',
+  'password' => '123456789',
+)  
+[2025-06-19 17:10:21] local.DEBUG: array (
+  'username' => 'Ayoub',
+  'password' => '123456789',
+)  
+[2025-06-19 17:11:10] local.INFO: Broadcasting [App\Events\NotificationEvent] on channels [private-notifications.119] with payload:
+{
+    "user_id": 119,
+    "sender": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+    "message": {
+        "msg": "\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u062d\u062c\u0632\u0643.",
+        "receiver": "Ayoub",
+        "sender": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+        "booking_id": {
+            "id": 456,
+            "cmn_branch_id": 15,
+            "cmn_customer_id": 131,
+            "sch_employee_id": 37,
+            "date": "2025-07-03T21:00:00.000000Z",
+            "start_time": "2025-06-19T12:00:00.000000Z",
+            "end_time": "2025-06-19T13:00:00.000000Z",
+            "sch_service_id": 20,
+            "status": 4,
+            "service_amount": "65.00",
+            "paid_amount": "65.00",
+            "payment_status": 1,
+            "cmn_payment_type_id": 4,
+            "canceled_paid_amount": "0.00",
+            "cancel_paid_status": 2,
+            "cancel_cmn_payment_type_id": null,
+            "remarks": null,
+            "online_done": 0,
+            "created_by": 131,
+            "updated_by": null,
+            "created_at": null,
+            "updated_at": "2025-06-19T14:11:10.000000Z",
+            "sch_service_booking_info_id": 382
+        },
+        "branch_id": {
+            "id": 15,
+            "name": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+            "phone": "0911189222",
+            "email": "aljazera@gmail.com",
+            "address": "&rlm;\u0645\u0635\u0631\u0627\u062a\u0629 \u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u062c\u0632\u064a\u0631\u0629",
+            "order": 50,
+            "status": 1,
+            "created_by": 100,
+            "updated_by": 1,
+            "created_at": "2025-02-28T18:20:08.000000Z",
+            "updated_at": "2025-05-28T01:06:29.000000Z",
+            "lat": "32.409286",
+            "long": "15.022975",
+            "zone_id": 2
+        },
+        "phone_number": null,
+        "user_type": 2,
+        "latitude": "32.409286",
+        "longitude": "15.022975",
+        "status": 4
+    },
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-06-19 17:11:11] local.INFO: Broadcasting [App\Events\NotificationEvent] on channels [private-notifications.1] with payload:
+{
+    "user_id": 1,
+    "sender": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+    "message": {
+        "msg": "\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u062d\u062c\u0632\u0643.",
+        "receiver": "admin",
+        "sender": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+        "booking_id": {
+            "id": 456,
+            "cmn_branch_id": 15,
+            "cmn_customer_id": 131,
+            "sch_employee_id": 37,
+            "date": "2025-07-03T21:00:00.000000Z",
+            "start_time": "2025-06-19T12:00:00.000000Z",
+            "end_time": "2025-06-19T13:00:00.000000Z",
+            "sch_service_id": 20,
+            "status": 4,
+            "service_amount": "65.00",
+            "paid_amount": "65.00",
+            "payment_status": 1,
+            "cmn_payment_type_id": 4,
+            "canceled_paid_amount": "0.00",
+            "cancel_paid_status": 2,
+            "cancel_cmn_payment_type_id": null,
+            "remarks": null,
+            "online_done": 0,
+            "created_by": 131,
+            "updated_by": null,
+            "created_at": null,
+            "updated_at": "2025-06-19T14:11:10.000000Z",
+            "sch_service_booking_info_id": 382
+        },
+        "branch_id": {
+            "id": 15,
+            "name": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+            "phone": "0911189222",
+            "email": "aljazera@gmail.com",
+            "address": "&rlm;\u0645\u0635\u0631\u0627\u062a\u0629 \u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u062c\u0632\u064a\u0631\u0629",
+            "order": 50,
+            "status": 1,
+            "created_by": 100,
+            "updated_by": 1,
+            "created_at": "2025-02-28T18:20:08.000000Z",
+            "updated_at": "2025-05-28T01:06:29.000000Z",
+            "lat": "32.409286",
+            "long": "15.022975",
+            "zone_id": 2
+        },
+        "phone_number": null,
+        "user_type": 1,
+        "latitude": "32.409286",
+        "longitude": "15.022975",
+        "status": 4
+    },
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-06-19 17:11:11] local.INFO: Broadcasting [bookingCreated] on channels [admin-notifications.1, admin-notifications.100, admin-notifications.119, admin-notifications.119] with payload:
+{
+    "message": "\u062a\u0645 \u0625\u0636\u0627\u0641\u0629 \u062d\u062c\u0632 \u062c\u062f\u064a\u062f \u0628\u0648\u0627\u0633\u0637\u0629 \u0627\u064a\u0648\u0628 \u0628\u0627\u0644\u062d\u0627\u062c",
+    "id": 456,
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-06-19 17:12:32] local.DEBUG: array (
+  'username' => 'ziad',
+  'password' => '123456789',
+)  
+[2025-06-19 17:13:55] local.INFO: Broadcasting [App\Events\NotificationEvent] on channels [private-notifications.1] with payload:
+{
+    "user_id": 1,
+    "sender": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+    "message": {
+        "msg": "\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u062d\u062c\u0632\u0643.",
+        "receiver": "admin",
+        "sender": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+        "booking_id": {
+            "id": 458,
+            "cmn_branch_id": 15,
+            "cmn_customer_id": 207,
+            "sch_employee_id": 37,
+            "date": "2025-07-03T21:00:00.000000Z",
+            "start_time": "2025-06-19T14:00:00.000000Z",
+            "end_time": "2025-06-19T15:00:00.000000Z",
+            "sch_service_id": 20,
+            "status": 4,
+            "service_amount": "65.00",
+            "paid_amount": "65.00",
+            "payment_status": 1,
+            "cmn_payment_type_id": 4,
+            "canceled_paid_amount": "0.00",
+            "cancel_paid_status": 2,
+            "cancel_cmn_payment_type_id": null,
+            "remarks": null,
+            "online_done": 0,
+            "created_by": 207,
+            "updated_by": null,
+            "created_at": null,
+            "updated_at": "2025-06-19T14:13:55.000000Z",
+            "sch_service_booking_info_id": 384
+        },
+        "branch_id": {
+            "id": 15,
+            "name": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+            "phone": "0911189222",
+            "email": "aljazera@gmail.com",
+            "address": "&rlm;\u0645\u0635\u0631\u0627\u062a\u0629 \u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u062c\u0632\u064a\u0631\u0629",
+            "order": 50,
+            "status": 1,
+            "created_by": 100,
+            "updated_by": 1,
+            "created_at": "2025-02-28T18:20:08.000000Z",
+            "updated_at": "2025-05-28T01:06:29.000000Z",
+            "lat": "32.409286",
+            "long": "15.022975",
+            "zone_id": 2
+        },
+        "phone_number": null,
+        "user_type": 1,
+        "latitude": "32.409286",
+        "longitude": "15.022975",
+        "status": 4
+    },
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-06-19 17:13:55] local.INFO: Broadcasting [bookingCreated] on channels [admin-notifications.1, admin-notifications.100] with payload:
+{
+    "message": "\u062a\u0645 \u0625\u0636\u0627\u0641\u0629 \u062d\u062c\u0632 \u062c\u062f\u064a\u062f \u0628\u0648\u0627\u0633\u0637\u0629 &rlm;\u0645\u0644\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0629",
+    "id": 458,
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-06-19 17:14:17] local.INFO: Broadcasting [App\Events\NotificationEvent] on channels [private-notifications.1] with payload:
+{
+    "user_id": 1,
+    "sender": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+    "message": {
+        "msg": "\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u062d\u062c\u0632\u0643.",
+        "receiver": "admin",
+        "sender": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+        "booking_id": {
+            "id": 459,
+            "cmn_branch_id": 15,
+            "cmn_customer_id": 208,
+            "sch_employee_id": 37,
+            "date": "2025-07-03T21:00:00.000000Z",
+            "start_time": "2025-06-19T15:00:00.000000Z",
+            "end_time": "2025-06-19T16:00:00.000000Z",
+            "sch_service_id": 20,
+            "status": 4,
+            "service_amount": "65.00",
+            "paid_amount": "65.00",
+            "payment_status": 1,
+            "cmn_payment_type_id": 4,
+            "canceled_paid_amount": "0.00",
+            "cancel_paid_status": 2,
+            "cancel_cmn_payment_type_id": null,
+            "remarks": null,
+            "online_done": 0,
+            "created_by": 208,
+            "updated_by": null,
+            "created_at": null,
+            "updated_at": "2025-06-19T14:14:17.000000Z",
+            "sch_service_booking_info_id": 385
+        },
+        "branch_id": {
+            "id": 15,
+            "name": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+            "phone": "0911189222",
+            "email": "aljazera@gmail.com",
+            "address": "&rlm;\u0645\u0635\u0631\u0627\u062a\u0629 \u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u062c\u0632\u064a\u0631\u0629",
+            "order": 50,
+            "status": 1,
+            "created_by": 100,
+            "updated_by": 1,
+            "created_at": "2025-02-28T18:20:08.000000Z",
+            "updated_at": "2025-05-28T01:06:29.000000Z",
+            "lat": "32.409286",
+            "long": "15.022975",
+            "zone_id": 2
+        },
+        "phone_number": null,
+        "user_type": 1,
+        "latitude": "32.409286",
+        "longitude": "15.022975",
+        "status": 4
+    },
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-06-19 17:14:17] local.INFO: Broadcasting [bookingCreated] on channels [admin-notifications.1, admin-notifications.100] with payload:
+{
+    "message": "\u062a\u0645 \u0625\u0636\u0627\u0641\u0629 \u062d\u062c\u0632 \u062c\u062f\u064a\u062f \u0628\u0648\u0627\u0633\u0637\u0629 &rlm;\u0645\u0644\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0629",
+    "id": 459,
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-06-20 16:56:23] local.DEBUG: array (
+  'username' => 'alhadf',
+  'password' => '123456789',
+)  
+[2025-06-20 16:56:27] local.DEBUG: array (
+  'username' => 'alhadf',
+  'password' => '12345678',
+)  
+[2025-06-20 16:56:31] local.DEBUG: array (
+  'username' => 'alhadf',
+  'password' => '1234567',
+)  
+[2025-06-20 17:00:11] local.DEBUG: array (
+  'username' => 'alhadf',
+  'password' => '123456789',
+)  
+[2025-06-20 18:52:58] local.DEBUG: array (
+  'username' => 'alhadf',
+  'password' => '123456789',
+)  
+[2025-06-20 19:08:34] local.INFO: service list {"serviceList":[{"id":null,"cmn_branch_id":"12","cmn_customer_id":131,"sch_employee_id":"33","date":"2025-06-20","start_time":"21:00:00","end_time":"22:00:00","sch_service_id":"18","status":1,"service_amount":"60.00","paid_amount":0,"payment_status":2,"cmn_payment_type_id":"1","canceled_paid_amount":0,"cancel_paid_status":2,"remarks":"","created_by":131}]} 
+[2025-06-20 19:08:34] local.INFO: service Booking info {"servicebooking info":{"App\\Models\\Booking\\SchServiceBookingInfo":{"booking_date":"2025-06-20T16:08:34.774260Z","cmn_customer_id":131,"total_amount":60.0,"payable_amount":60.0,"paid_amount":60.0,"due_amount":60.0,"is_due_paid":0,"coupon_code":"","coupon_discount":0,"remarks":"","created_by":119,"updated_at":"2025-06-20T16:08:34.000000Z","created_at":"2025-06-20T16:08:34.000000Z","id":388}}} 
+[2025-06-20 19:08:34] local.INFO: Broadcasting [bookingCreated] on channels [admin-notifications.1, admin-notifications.96, admin-notifications.98] with payload:
+{
+    "message": "\u062a\u0645 \u0625\u0636\u0627\u0641\u0629 \u062d\u062c\u0632 \u062c\u062f\u064a\u062f \u0628\u0648\u0627\u0633\u0637\u0629 \u0627\u064a\u0648\u0628 \u0628\u0627\u0644\u062d\u0627\u062c",
+    "id": 462,
+    "created_at": "1 second ago",
+    "socket": null
+}  
+[2025-06-20 19:08:34] local.INFO: userstobenotified {"userstobenotified ":[{"App\\Models\\User":{"id":1,"name":"admin User","username":"admin","phone_number":null,"is_sys_adm":1,"user_type":1,"photo":"uploadfiles/hx4F5JBHzUmfFEGrjxetjih9Lbw5mfmBpEU9uQGJ.png","sch_employee_id":null,"status":1,"email":"admin@goalmasters.top","email_verified_at":"2021-10-11T08:59:29.000000Z"}},{"App\\Models\\User":{"id":96,"name":"ملاعب الهدف","username":"Alhadf","phone_number":null,"is_sys_adm":0,"user_type":1,"photo":"uploadfiles/B7i5bmlIKcIGIzANq0Ud8Db4uCrSe8SaYr8bNvbn.jpg","sch_employee_id":null,"status":1,"email":null,"email_verified_at":null}},{"App\\Models\\User":{"id":98,"name":"User","username":"H1","phone_number":null,"is_sys_adm":0,"user_type":1,"photo":null,"sch_employee_id":null,"status":1,"email":null,"email_verified_at":null}}]} 
+[2025-06-20 19:10:32] local.INFO: Broadcasting [bookingChanged] on channels [admin-notifications.1, admin-notifications.98] with payload:
+{
+    "message": " \u062a\u0645 \u062a\u063a\u064a\u064a\u0631 \u062d\u0627\u0644\u0629 \u0627\u0644\u062d\u062c\u0632 \u0627\u0644\u062e\u0627\u0635 \u0628\u0627\u064a\u0648\u0628 \u0628\u0627\u0644\u062d\u0627\u062c \u0625\u0644\u064a \u062d\u0627\u0644\u0629 \u0645\u0648\u0627\u0641\u0642 \u0639\u0644\u064a\u0647 \u0628\u0648\u0627\u0633\u0637\u0629 \u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u0647\u062f\u0641",
+    "id": 462,
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-06-20 19:10:42] local.ERROR: Call to a member function markAsRead() on null {"userId":96,"exception":"[object] (Error(code: 0): Call to a member function markAsRead() on null at /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/app/Http/Controllers/Dashboard/DashboardController.php:178)
+[stacktrace]
+#0 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(54): App\\Http\\Controllers\\Dashboard\\DashboardController->markAsReadOne()
+#1 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(43): Illuminate\\Routing\\Controller->callAction()
+#2 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Routing/Route.php(259): Illuminate\\Routing\\ControllerDispatcher->dispatch()
+#3 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Routing/Route.php(205): Illuminate\\Routing\\Route->runController()
+#4 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Routing/Router.php(798): Illuminate\\Routing\\Route->run()
+#5 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(141): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}()
+#6 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/app/Http/Middleware/XSSProtection.php(43): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#7 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): App\\Http\\Middleware\\XSSProtection->handle()
+#8 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/barryvdh/laravel-debugbar/src/Middleware/InjectDebugbar.php(66): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#9 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Barryvdh\\Debugbar\\Middleware\\InjectDebugbar->handle()
+#10 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(50): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#11 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle()
+#12 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(44): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#13 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Auth\\Middleware\\Authenticate->handle()
+#14 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(78): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#15 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle()
+#16 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#17 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#18 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#19 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#20 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Session\\Middleware\\StartSession->handle()
+#21 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#22 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#23 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#24 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#25 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(116): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#26 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Routing/Router.php(797): Illuminate\\Pipeline\\Pipeline->then()
+#27 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Routing/Router.php(776): Illuminate\\Routing\\Router->runRouteWithinStack()
+#28 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Routing/Router.php(740): Illuminate\\Routing\\Router->runRoute()
+#29 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Routing/Router.php(729): Illuminate\\Routing\\Router->dispatchToRoute()
+#30 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(190): Illuminate\\Routing\\Router->dispatch()
+#31 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(141): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#32 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/barryvdh/laravel-debugbar/src/Middleware/InjectDebugbar.php(66): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#33 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Barryvdh\\Debugbar\\Middleware\\InjectDebugbar->handle()
+#34 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#35 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#36 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#37 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#38 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#39 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#40 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#41 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#42 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(86): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#43 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#44 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/fideloper/proxy/src/TrustProxies.php(57): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#45 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Fideloper\\Proxy\\TrustProxies->handle()
+#46 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(116): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#47 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(165): Illuminate\\Pipeline\\Pipeline->then()
+#48 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(134): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#49 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/public/index.php(51): Illuminate\\Foundation\\Http\\Kernel->handle()
+#50 /home/goalmasters-web/htdocs/web.goalmasters.online/public/GoalMaster/index.php(21): require_once('...')
+#51 {main}
+"} 
