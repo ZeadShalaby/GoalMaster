@@ -39,6 +39,8 @@ class StoreBookingRequest extends BaseFormRequest
             'service_date' => 'required|date|after_or_equal:today',
             'coupon_code' => 'sometimes|string|max:255',
             'is_monthly' => 'nullable|in:0,1',
+            'status' => 'nullable|in:0,1,2,3,4', // 1: Pending, 2: Confirmed, 3: Cancelled, 4: Completed
+            'paid_amount' => 'nullable|numeric|min:0',
         ];
     }
 }

@@ -76,7 +76,7 @@ class AuthController extends Controller
             $token = Auth::guard('api')->attempt($credentials);
             if(!$token){return response()->json(['status' => "false", 'message' => __('apiValidation.Something went wrong')], 400);}
             $user = Auth::guard('api')->user(); //UserType::getById($user->user_type)
-            if($user->user_type == UserType::SystemUser){
+            if($user->user_type != UserType::SystemUser){
                 $details = $this->GetDetails($user);
                 $user->zone_id = $details['zone_id'][0];
                 $user->club_id = $details['club_id'][0];
