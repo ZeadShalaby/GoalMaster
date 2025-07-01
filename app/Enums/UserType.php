@@ -18,6 +18,8 @@ final class UserType extends Enum
     const SystemUser = 1;
     const WebsiteUser = 2;
 
+    const SystemAdmin = 1;
+
     public static function getById($id)
     {
         $type = collect(self::getInstances())->firstWhere('value', $id);

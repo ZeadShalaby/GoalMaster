@@ -98,7 +98,9 @@ Route::group(['middleware' => ['api', 'setLocale' ]], function () {
     Route::group(['middleware' => ['jwt.auth:api','manager'],'prefix'=>'manager'], function () {
         Route::get('/dashboard/analysis', [ManagerController::class, 'analysis']);
         Route::get('/get-service-booking-info', [BookingController::class, 'getServiceBookingInfo']);
-      Route::group(['prefix' =>'booking'],function() {
+        Route::get('/returnCustomers', [BookingController::class, 'returnCustomers']);
+        Route::post('/customer-create', [BookingController::class, 'customerStore']);
+        Route::group(['prefix' =>'booking'],function() {
             Route::post('/depoist-money',[BookingController::class,'addServiceBookingPayment']);
             Route::post('/change-service-booking-status',[BookingController::class, 'changeServiceBookingStatus']);
         });

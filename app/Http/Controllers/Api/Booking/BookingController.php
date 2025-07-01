@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Booking;
 
 use App\Models\Services\SchServices;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 use Carbon\Carbon;
 use ErrorException;
@@ -127,6 +128,7 @@ class BookingController extends Controller
                     $q->where('sch_service_category_id', $category_id);
                 });
             })
+            ->latest()
             ->get()
             ->groupBy('date');
     }
@@ -236,6 +238,39 @@ class BookingController extends Controller
             'last_page' => ceil(count($availableSlots) / $perPage), // count of total pages
         ]);
     }
+
+        private function storeCustomerAsAdmin(Request $request)
+    {
+        return CmnCustomer::create([
+            'phone_no' => $request->phone_no,
+            'full_name' => $request->full_name,
+        ]);
+    }
+
+    private function storeCustomerAsManager(Request $request, $user)
+    {
+        $customer = CmnCustomer::firstOrCreate(
+            ['phone_no' => $request->phone_no],
+            ['full_name' => $request->full_name]
+        );
+
+        $exists = DB::table('manager_customer')
+            ->where('manager_id', $user->id)
+            ->where('customer_id', $customer->id)
+            ->exists();
+
+        if (!$exists) {
+            DB::table('manager_customer')->insert([
+                'full_name' => $request->full_name,
+                'manager_id' => $user->id,
+                'customer_id' => $customer->id,
+            ]);
+        }
+
+        return $customer;
+    }
+
+
 
     /**
      * Paginate the given data and return a formatted JSON response.
@@ -428,7 +463,8 @@ class BookingController extends Controller
     public function saveBooking(StoreBookingRequest $request)
     {
         $validated = $request->validated();
-
+        $status = $validated['status'] ?? null;
+        $paidAmount = $validated['paid_amount'] ?? 0;
         $employeeId = $validated['employee_id'];
         $serviceId = $validated['service_id'];
         $serviceBranchId = $validated['branch_id'];
@@ -449,22 +485,25 @@ class BookingController extends Controller
             $couponCode = $validated['coupon_code'] ?? null;
 
             $customerId = 0;
-            $customer = null;
+            $customer;
             if (auth()->check()) {
-                $customer = CmnCustomer::where('user_id', auth()->id())->select('id', 'phone_no','user_id')->first();
+              // $customer = CmnCustomer::where('user_id', Auth::guard('api')->user()->id)->select('id', 'phone_no','user_id')->first();
+
+                $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
                 if ($paymentType == PaymentType::UserBalance) {
                     $userBalance = auth()->user()->balance();
                     if ($userBalance === null) {
                         throw new ErrorException(__('messages.You do not have enough balance in your account'));
                     }
                 }
+
             } else {
                 if ($paymentType == PaymentType::UserBalance) {
                     throw new ErrorException(__('messages.You can\'t make payment by user balance without login try another one'));
                 }
                 $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
             }
-
+          
             if ($customer !== null) {
                 $customerId = $customer->id;
             } else {
@@ -523,9 +562,10 @@ class BookingController extends Controller
                 );
             }
 
-
-
-            $serviceStatus = $paymentType == PaymentType::UserBalance ? ServiceStatus::Done : ServiceStatus::Processing;
+           $serviceStatus = $status 
+            ?? ($paymentType === PaymentType::UserBalance 
+                ? ServiceStatus::Done 
+                : ServiceStatus::Processing);
 
             $serviceTotalAmount += $serviceCharge->fees;
 
@@ -539,7 +579,7 @@ class BookingController extends Controller
                 'sch_service_id' => $serviceId,
                 'status' => $serviceStatus,
                 'service_amount' => $serviceCharge->fees,
-                'paid_amount' => 0,
+                'paid_amount' => $paidAmount,
                 'payment_status' => ServicePaymentStatus::Unpaid,
                 'cmn_payment_type_id' => $paymentType,
                 'canceled_paid_amount' => 0,
@@ -602,10 +642,11 @@ class BookingController extends Controller
                     'payment_status' => ServicePaymentStatus::Paid,
                     'status' => ServiceStatus::Done,
                 ]);
+              
               $branch = CmnBranch::find($serviceBranchId);
                if($customer != null){
                 //? todo send notification to customer 
-                $user = $customer->user;
+                $user = $customer->user ?? User::where('phone_number',$customer->phone_no)->first();
                 SocketNotify($user->id, $branch->name, [
                     'msg' => __('messages.Your booking has been confirmed'),
                     'receiver' => $user->username,
@@ -957,6 +998,103 @@ class BookingController extends Controller
             ], 500);
         }
     }
+
+
+
+    public function returnCustomers(Request $request)
+    {
+        try{
+            $user = Auth::user();
+            $search = $request->query('search');
+            if ($user->is_sys_adm == UserType::SystemAdmin) {
+                // If the user is an admin, show all customers
+                $allcustomers = DB::table('cmn_customers')
+                    ->when($search, function ($query) use ($search) {
+                        return $query->where(function($q) use ($search) {
+                            $q->where('full_name', 'LIKE', "%{$search}%")
+                            ->orWhere('phone_no', 'LIKE', "%{$search}%");
+                        });
+                    })
+                    ->get();
+            } else {
+                // If the user is not an admin, limit to their accessible branches
+                $userBranch = SecUserBranch::where('user_id', $user->id)
+                                ->pluck('cmn_branch_id')
+                                ->toArray();
+
+                $allcustomers = SchServiceBooking::UserWiseServiceBooking()
+                    ->join('cmn_customers', 'sch_service_bookings.cmn_customer_id', '=', 'cmn_customers.id')
+                    ->whereIn('sch_service_bookings.cmn_branch_id', $userBranch)
+                    ->when($search, function ($query) use ($search) {
+                        return $query->where(function($q) use ($search) {
+                            $q->where('cmn_customers.full_name', 'LIKE', "%{$search}%")
+                            ->orWhere('cmn_customers.phone_no', 'LIKE', "%{$search}%");
+                        });
+                    })
+                    ->select('cmn_customers.*') // return only customer fields
+                    ->distinct()
+                    ->get();
+            }
+
+            return $allcustomers;
+        }catch (Exception $ex) {
+                return response()->json(['status' => 'false', 'message' => $ex->getMessage()], 400);
+            }
+
+    }
+
+    
+    // ?todo customer store 
+    public function customerStore(Request $request)
+    {
+        $user = Auth::user();
+        $isAdmin = $user->is_sys_adm == 1;
+
+        $validator = $this->validateCustomer($request, $isAdmin);
+
+        if ($validator->fails()) {
+            return $this->apiResponse(['status' => '500', 'data' => $validator->errors()], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $customer = $isAdmin
+                ? $this->storeCustomerAsAdmin($request)
+                : $this->storeCustomerAsManager($request, $user);
+
+            DB::commit();
+            return $this->apiResponse(['status' => '1', 'data' => ['cmn_customer_id' => $customer->id]], 200);
+
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return $this->apiResponse(['status' => '501', 'data' => ['message' => $ex->getMessage()]], 400);
+        }
+    }
+
+
+    private function validateCustomer(Request $request, bool $isAdmin)
+    {
+        $rules = [
+            'full_name' => ['required', 'string'],
+            'phone_no' => ['required', 'string', 'max:20', 'regex:/^09[0-9]{8}$/'],
+        ];
+
+        $messages = [
+            'full_name.required' => 'الاسم مطلوب',
+            'phone_no.required' => 'رقم الهاتف مطلوب',
+            'phone_no.regex' => 'رقم الهاتف غير صحيح يجب أن يبدا ب 09 و يتكون من 10 رقم',
+        ];
+
+        if ($isAdmin) {
+            $rules['phone_no'][] = 'unique:cmn_customers,phone_no';
+            $messages['phone_no.unique'] = 'الرقم مسجل من قبل';
+        }
+
+        return Validator::make($request->all(), $rules, $messages);
+    }
+
+
 
 
 
