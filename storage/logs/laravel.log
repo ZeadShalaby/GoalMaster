@@ -268,3 +268,83 @@
 #38 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php(16): require_once('D:\\\\my projects\\\\...')
 #39 {main}
 "} 
+[2025-06-20 22:43:15] local.INFO: Broadcasting [App\Events\NotificationEvent] on channels [private-notifications.1] with payload:
+{
+    "user_id": 1,
+    "sender": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+    "message": {
+        "msg": "\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u062d\u062c\u0632\u0643.",
+        "receiver": "admin",
+        "sender": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+        "booking_id": {
+            "id": 363,
+            "cmn_branch_id": 15,
+            "cmn_customer_id": 145,
+            "sch_employee_id": 37,
+            "date": "2025-07-04T22:00:00.000000Z",
+            "start_time": "2025-06-20T13:00:00.000000Z",
+            "end_time": "2025-06-20T14:00:00.000000Z",
+            "sch_service_id": 20,
+            "status": 4,
+            "service_amount": "65.00",
+            "paid_amount": "65.00",
+            "payment_status": 1,
+            "cmn_payment_type_id": 4,
+            "canceled_paid_amount": "0.00",
+            "cancel_paid_status": 2,
+            "cancel_cmn_payment_type_id": null,
+            "remarks": null,
+            "online_done": 0,
+            "created_by": 145,
+            "updated_by": null,
+            "created_at": null,
+            "updated_at": "2025-06-20T20:43:14.000000Z",
+            "sch_service_booking_info_id": 316
+        },
+        "branch_id": {
+            "id": 15,
+            "name": "\u0645\u0644\u0627\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0647",
+            "phone": "0911189222",
+            "email": "aljazera@gmail.com",
+            "address": "&rlm;\u0645\u0635\u0631\u0627\u062a\u0629 \u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u062c\u0632\u064a\u0631\u0629",
+            "order": 50,
+            "status": 1,
+            "created_by": 1,
+            "updated_by": null,
+            "created_at": "2025-02-28T20:20:08.000000Z",
+            "updated_at": "2025-02-28T20:20:08.000000Z",
+            "lat": "32.409286",
+            "long": "15.022975",
+            "zone_id": 2
+        },
+        "phone_number": null,
+        "user_type": 1,
+        "latitude": "32.409286",
+        "longitude": "15.022975",
+        "status": 4
+    },
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-06-20 22:43:18] local.INFO: Broadcasting [bookingCreated] on channels [admin-notifications.1, admin-notifications.100] with payload:
+{
+    "message": "\u062a\u0645 \u0625\u0636\u0627\u0641\u0629 \u062d\u062c\u0632 \u062c\u062f\u064a\u062f \u0628\u0648\u0627\u0633\u0637\u0629 &rlm;\u0645\u0644\u0639\u0628 \u0627\u0644\u062c\u0632\u064a\u0631\u0629",
+    "id": 363,
+    "created_at": "\u0645\u0646\u0630 \u062b\u0627\u0646\u064a\u0629",
+    "socket": null
+}  
+[2025-07-06 18:25:55] local.ERROR: No arguments expected for "route:list" command, got "-". {"exception":"[object] (Symfony\\Component\\Console\\Exception\\RuntimeException(code: 0): No arguments expected for \"route:list\" command, got \"-\". at D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\symfony\\console\\Input\\ArgvInput.php:196)
+[stacktrace]
+#0 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\symfony\\console\\Input\\ArgvInput.php(89): Symfony\\Component\\Console\\Input\\ArgvInput->parseArgument('-')
+#1 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\symfony\\console\\Input\\ArgvInput.php(74): Symfony\\Component\\Console\\Input\\ArgvInput->parseToken('-', true)
+#2 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\symfony\\console\\Input\\Input.php(56): Symfony\\Component\\Console\\Input\\ArgvInput->parse()
+#3 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\symfony\\console\\Command\\Command.php(285): Symfony\\Component\\Console\\Input\\Input->bind(Object(Symfony\\Component\\Console\\Input\\InputDefinition))
+#4 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(152): Symfony\\Component\\Console\\Command\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Illuminate\\Console\\OutputStyle))
+#5 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\symfony\\console\\Application.php(1078): Illuminate\\Console\\Command->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#6 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\symfony\\console\\Application.php(324): Symfony\\Component\\Console\\Application->doRunCommand(Object(Illuminate\\Foundation\\Console\\RouteListCommand), Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#7 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\symfony\\console\\Application.php(175): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#8 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Application.php(102): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#9 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(155): Illuminate\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#10 D:\\my projects\\company task\\Other Work\\Goal Master\\GoalMaster\\artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#11 {main}
+"} 

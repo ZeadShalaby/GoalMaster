@@ -29,7 +29,7 @@ class StoreBookingRequest extends BaseFormRequest
             'employee_id' => 'required|exists:sch_employees,id',
             'payment_type' => 'required|exists:cmn_payment_types,id',
             'full_name' => 'required|string|max:255',
-            'phone_no' => ['required', 'string', 'max:20','regex:/^09[0-9]{8}$/','exists:cmn_customers,phone_no',],
+            'phone_no' => ['required', 'string', 'max:20','regex:/^09[0-9]{8}$/'],
             'state' => 'required|in:1,2',
             'postal_code' => 'nullable|string|max:10',
             'city' => 'nullable|string|max:100',

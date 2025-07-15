@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api\Booking;
 
-use App\Models\Services\SchServices;
-use Illuminate\Support\Facades\Validator;
 use Exception;
 use Carbon\Carbon;
 use ErrorException;
@@ -24,12 +22,15 @@ use App\Enums\ServicePaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterRequest;
 use App\Models\Customer\CmnCustomer;
+use App\Models\Employee\SchEmployee;
+use App\Models\Services\SchServices;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\TimeSlotRequest;
 use App\Notifications\UserNotification;
 use App\Models\Settings\CmnBusinessHour;
 use App\Enums\ServiceCancelPaymentStatus;
 use App\Models\Booking\SchServiceBooking;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Repository\UtilityRepository;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\Employee\SchEmployeeOffday;
@@ -171,7 +172,7 @@ class BookingController extends Controller
     {
         $availableSlots = [];
         $allHours = $this->generateTimeSlots();
-
+    
         foreach ($fields as $field) {
             for ($date = Carbon::parse($booking_start); $date->lte(Carbon::parse($booking_end)); $date->addDay()) {
                 $dateStr = $date->format('Y-m-d');
@@ -191,12 +192,15 @@ class BookingController extends Controller
                 foreach ($filteredSlots as $slot) {
                     foreach ($field->schServiceCategories as $category) {
                         foreach ($category->services as $service) {
+                            $employees = SchEmployee::where('cmn_branch_id', $field->id)->get();
                             $availableSlots[] = [
                                 'date' => $dateStr,
                                 'start_time' => $slot['start_time'],
                                 'end_time' => $slot['end_time'],
                                 'club_id' => $field->id,
                                 'club' => $field->name,
+                                'employees' => $employees->pluck('id')->toArray(),
+                                'employees_name' => $employees->pluck('full_name')->toArray(),
                                 'category_id' => $category->id,
                                 'category_name' => $category->name,
                                 'service_id' => $service->id,
@@ -486,7 +490,9 @@ class BookingController extends Controller
             $customerId = 0;
             $customer = null;
             if (auth()->check()) {
-                $customer = CmnCustomer::where('user_id', auth()->id())->select('id', 'phone_no','user_id')->first();
+              $customer = CmnCustomer::where('user_id', auth()->user()->id)
+                ->orWhere('phone_no', auth()->user()->phone_number)
+                ->first();
                 if ($paymentType == PaymentType::UserBalance) {
                     $userBalance = auth()->user()->balance();
                     if ($userBalance === null) {
@@ -499,7 +505,6 @@ class BookingController extends Controller
                 }
                 $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
             }
-
             if ($customer !== null) {
                 $customerId = $customer->id;
             } else {
@@ -641,7 +646,7 @@ class BookingController extends Controller
               $branch = CmnBranch::find($serviceBranchId);
                if($customer != null){
                 //? todo send notification to customer 
-                $user = $customer->user;
+                $user = User::where('phone_number',$customer->phone_no)->first() ?? $customer->user;
                 SocketNotify($user->id, $branch->name, [
                     'msg' => __('messages.Your booking has been confirmed'),
                     'receiver' => $user->username,
