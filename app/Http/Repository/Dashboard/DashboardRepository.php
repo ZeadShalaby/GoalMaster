@@ -303,10 +303,14 @@ class DashboardRepository
         $todayQuery = SchServiceBooking::selectRaw('SUM(service_amount - paid_amount) as due, "today" as type')
             ->where('date', $today)
             ->where('status', ServiceStatus::Done)
+            ->orWhere('status', ServiceStatus::Approved)
+            ->orWhere('status', ServiceStatus::Processing)
             ->whereIn('cmn_branch_id', $branchIds);
 
         $totalQuery =SchServiceBooking::selectRaw('SUM(service_amount - paid_amount) as due, "total" as type')
             ->where('status', ServiceStatus::Done)
+            ->orWhere('status', ServiceStatus::Approved)
+            ->orWhere('status', ServiceStatus::Processing)
             ->whereIn('cmn_branch_id', $branchIds);
 
         $result = $todayQuery->unionAll($totalQuery)->get();
