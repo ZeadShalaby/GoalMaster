@@ -28,7 +28,7 @@ class WhatsAppService
 
   public function sendMessage($phoneNumber, $customer_name, $messageComponents)
   {
-    $phoneNumber = env('country_code') . $phoneNumber;
+    $phoneNumber = 201553068530 ;//env('country_code') . $phoneNumber;
     // $messageComponents = $messageComponents->order_details[0];
 
     // Convert 24-hour time format to 12-hour format with AM/PM

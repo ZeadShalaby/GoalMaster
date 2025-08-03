@@ -63,6 +63,16 @@
 </div>
 
 <!-- سكريبت توليد الـ PDF والطباعة -->
+
+<div style="width:100%;float:right;">
+    <div style="float:right;width:100%;text-align:right;padding-top:10px;">{{translate('إجمالي المبلغ')}}: {{round($totalAmt,2)}}</div>
+    <div style="float:right;width:100%;text-align:right;padding-top:10px;">{{translate('الخصم')}}: {{round($orders[0]->coupon_discount ?? 0,2)}}</div>
+    <div style="float:right;width:100%;text-align:right;padding-top:10px;">{{translate('المبلغ المستحق بعد الخصم')}}: {{round($totalAmt - ($orders[0]->coupon_discount ?? 0),2)}}</div>
+    <div style="float:right;width:100%;text-align:right;padding-top:10px;">{{translate('المبلغ المدفوع')}}: {{round($paidAmt,2)}}</div>
+    <div style="float:right;width:100%;text-align:right;padding-top:10px;">{{translate('باقي')}}: {{round(($totalAmt - ($orders[0]->coupon_discount ?? 0)) - $paidAmt,2)}}</div>
+</div>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
     window.onload = function () {
@@ -73,6 +83,11 @@
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+
+            margin:       0.5,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
 
         html2pdf().from(element).set(opt).outputPdf('bloburl').then(function (pdfUrl) {
@@ -86,3 +101,5 @@
         });
     };
 </script>
+
+

@@ -115,22 +115,26 @@ class BookingController extends Controller
      */
     private function getBookings($booking_start, $booking_end, $start_time, $end_time, $cmn_branch_id, $category_id)
     {
-      return SchServiceBooking::query()
-        ->select('date', 'start_time', 'end_time', 'cmn_branch_id', 'sch_service_id')
-        ->whereIn('status', [0, 1, 2, 4]) 
-        ->when($booking_start && $booking_end, function ($query) use ($booking_start, $booking_end) {
-          $query->whereBetween('date', [$booking_start, $booking_end]);
-        })
-        ->when($cmn_branch_id, function ($query) use ($cmn_branch_id) {
-          $query->where('cmn_branch_id', $cmn_branch_id);
-        })
-        ->when($category_id, function ($query) use ($category_id) {
-          $query->whereHas('service', function ($q) use ($category_id) {
-            $q->where('sch_service_category_id', $category_id);
-          });
-        })
-        ->get()
-        ->groupBy('date');
+
+        return SchServiceBooking::query()
+            ->select('date', 'start_time', 'end_time', 'cmn_branch_id')
+            ->when($booking_start && $booking_end, function ($query) use ($booking_start, $booking_end) {
+                $query->whereBetween('date', [$booking_start, $booking_end]);
+            })
+            ->when($cmn_branch_id, callback: function ($query) use ($cmn_branch_id) {
+                $query->where('cmn_branch_id', $cmn_branch_id);
+            })
+            ->when($start_time && $end_time, function ($query) use ($start_time, $end_time) {
+                $query->whereBetween('start_time', [$start_time, $end_time]);
+            })
+            ->when($category_id, function ($query) use ($category_id) {
+                $query->whereHas('service', function ($q) use ($category_id) {
+                    $q->where('sch_service_category_id', $category_id);
+                });
+            })
+            ->latest()
+            ->get()
+            ->groupBy('date');
     }
 
     /**
@@ -504,7 +508,11 @@ class BookingController extends Controller
         $employeeId = $validated['employee_id'];
         $serviceId = $validated['service_id'];
         $serviceBranchId = $validated['branch_id'];
+<<<<<<< HEAD
         $is_monthly = $validated['is_monthly'] ?? 0;
+=======
+        $is_monthly = $validated['is_monthly'];
+>>>>>>> 3619ed217e2ffd55bef4795fc5670c3f359fcf5c
         $managerID = DB::table('sec_user_branches')->where('cmn_branch_id', $serviceBranchId)->first()->user_id;
         DB::beginTransaction();
         try {
@@ -524,9 +532,21 @@ class BookingController extends Controller
             $customerId = 0;
             $customer = null;
             if (auth()->check()) {
+<<<<<<< HEAD
               $customer = CmnCustomer::where('user_id', auth()->user()->id)
                 ->orWhere('phone_no',$phoneNo)
                 ->first();
+=======
+<<<<<<< HEAD
+              $customer = CmnCustomer::where('user_id', auth()->user()->id)
+                ->orWhere('phone_no',$phoneNo)
+                ->first();
+=======
+              // $customer = CmnCustomer::where('user_id', Auth::guard('api')->user()->id)->select('id', 'phone_no','user_id')->first();
+
+                $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
+>>>>>>> e510bd7e3567d51140dc35cca5a1d97a718d8f59
+>>>>>>> 3619ed217e2ffd55bef4795fc5670c3f359fcf5c
                 if ($paymentType == PaymentType::UserBalance) {
                     $userBalance = auth()->user()->balance();
                     if ($userBalance === null) {
@@ -539,6 +559,13 @@ class BookingController extends Controller
                 }
                 $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
             }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+          
+>>>>>>> e510bd7e3567d51140dc35cca5a1d97a718d8f59
+>>>>>>> 3619ed217e2ffd55bef4795fc5670c3f359fcf5c
             if ($customer !== null) {
                 $customerId = $customer->id;
             } else {
@@ -595,6 +622,7 @@ class BookingController extends Controller
                 return response()->json(['status'=>"false" , 'data'=>  __('messages.The selected service is not available at the chosen time. Please select a different time.') .
                     " [التاريخ: {$serviceDate}, من: {$serviceStartTime} إلى: {$serviceEndTime}]"],400);
             }
+
 
            $serviceStatus = $status 
             ?? ($paymentType === PaymentType::UserBalance 
@@ -687,8 +715,11 @@ class BookingController extends Controller
                 ]);
 
                $branch = CmnBranch::find($serviceBranchId);
+<<<<<<< HEAD
                $owner = SecUserBranch::where('cmn_branch_id',$branch->id)->first();
                $owner = User::find($owner->user_id);
+=======
+>>>>>>> 3619ed217e2ffd55bef4795fc5670c3f359fcf5c
                if($customer != null){
                 //? todo send notification to customer 
                 $user = User::where('phone_number',$customer->phone_no)->first() ?? $customer->user;
@@ -704,12 +735,17 @@ class BookingController extends Controller
                     'longitude' => $branch->long,
                     'status' => ServiceStatus::Done
                 ]);
+<<<<<<< HEAD
                    Notification::send($user, new ServiceOrderNotification($serviceBooking, $user));
                    Notification::send(
                      auth()->user()->user_type != 1 ? $owner : auth()->user(),
                      new ServiceOrderNotification($serviceBooking, auth()->user()->user_type != 1 ? $owner : auth()->user())
                    );
 
+=======
+                    Notification::send($user, new ServiceOrderNotification($serviceBooking, $user));
+                    Notification::send(auth()->user(), new ServiceOrderNotification($serviceBooking, auth()->user()));
+>>>>>>> 3619ed217e2ffd55bef4795fc5670c3f359fcf5c
                 // $user->notify(new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
                 Notification::send($user, new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
                }
@@ -735,7 +771,15 @@ class BookingController extends Controller
               $branch = CmnBranch::find($serviceBranchId);
                if($customer != null){
                 //? todo send notification to customer 
+<<<<<<< HEAD
                 $user = User::where('phone_number',$customer->phone_no)->first() ?? $customer->user;
+=======
+<<<<<<< HEAD
+                $user = User::where('phone_number',$customer->phone_no)->first() ?? $customer->user;
+=======
+                $user = $customer->user ?? User::where('phone_number',$customer->phone_no)->first();
+>>>>>>> e510bd7e3567d51140dc35cca5a1d97a718d8f59
+>>>>>>> 3619ed217e2ffd55bef4795fc5670c3f359fcf5c
                 SocketNotify($user->id, $branch->name, [
                     'msg' => __('messages.Your booking has been confirmed'),
                     'receiver' => $user->username,
