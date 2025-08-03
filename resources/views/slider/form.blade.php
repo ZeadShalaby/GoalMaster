@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+@if(Auth::user()->is_sys_adm == 1)
+
     <div class="page-inner">
         <div class="main-card card">
             <div class="card-header">
@@ -91,5 +93,5 @@
             });
         </script>
 
-
+@endif
 @endsection

@@ -34,7 +34,11 @@ class SchServiceBookingInfo extends Model
     {
         return $this->belongsToMany(SchServiceBooking::class,"sch_service_bookings","sch_service_booking_info_id","id");
     }
-	
+	public function serviceBookinges()
+{
+    return $this->hasMany(SchServiceBooking::class, 'sch_service_booking_info_id');
+}
+
 	public function serviceBookingsAll()
 	{
 		return $this->hasMany(SchServiceBooking::class,"sch_service_booking_info_id","id");

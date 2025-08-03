@@ -52,11 +52,14 @@ if ($order != null) {
 			<td>{{$key + 1}}</td>
 			<td>{{$details->id}}</td>
 			<td>{{$details->service}}</td>
-			<td>
-				{{$details->date}} <br>
-				{{'من ' . \Carbon\Carbon::createFromFormat('H:i:s', $details->start_time)->format('h:i A')}} <br>
-				{{'إلى ' . \Carbon\Carbon::createFromFormat('H:i:s', $details->end_time)->format('h:i A')}}
-			</td>
+			@if($details->date)
+                <td>
+                    {{$details->date}} <br>
+                    {{ 'من ' . \Carbon\Carbon::parse($details->start_time)->format('h:i A') }} <br>
+                    {{ 'إلى ' . \Carbon\Carbon::parse($details->end_time)->format('h:i A') }}
+                </td>
+            @endif
+
 			<td>{{$details->service_amount}}</td>
 			<td>{{$details->paid_amount}}</td>
 			<td>{{$details->due}}</td>

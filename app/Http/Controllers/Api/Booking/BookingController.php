@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api\Booking;
 
-use App\Models\Services\SchServices;
-use Illuminate\Support\Facades\Validator;
 use Exception;
 use Carbon\Carbon;
 use ErrorException;
@@ -24,12 +22,15 @@ use App\Enums\ServicePaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterRequest;
 use App\Models\Customer\CmnCustomer;
+use App\Models\Employee\SchEmployee;
+use App\Models\Services\SchServices;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\TimeSlotRequest;
 use App\Notifications\UserNotification;
 use App\Models\Settings\CmnBusinessHour;
 use App\Enums\ServiceCancelPaymentStatus;
 use App\Models\Booking\SchServiceBooking;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Repository\UtilityRepository;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\Employee\SchEmployeeOffday;
@@ -50,6 +51,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use App\Http\Repository\Coupon\CouponRepository;
 use App\Http\Repository\Booking\BookingRepository;
 use App\Http\Repository\Payment\PaymentRepository;
+use App\Models\Settings\CmnCompany;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BookingController extends Controller
 {
@@ -112,25 +115,22 @@ class BookingController extends Controller
      */
     private function getBookings($booking_start, $booking_end, $start_time, $end_time, $cmn_branch_id, $category_id)
     {
-        return SchServiceBooking::query()
-            ->select('date', 'start_time', 'end_time', 'cmn_branch_id')
-            ->when($booking_start && $booking_end, function ($query) use ($booking_start, $booking_end) {
-                $query->whereBetween('date', [$booking_start, $booking_end]);
-            })
-            ->when($cmn_branch_id, callback: function ($query) use ($cmn_branch_id) {
-                $query->where('cmn_branch_id', $cmn_branch_id);
-            })
-            ->when($start_time && $end_time, function ($query) use ($start_time, $end_time) {
-                $query->whereBetween('start_time', [$start_time, $end_time]);
-            })
-            ->when($category_id, function ($query) use ($category_id) {
-                $query->whereHas('service', function ($q) use ($category_id) {
-                    $q->where('sch_service_category_id', $category_id);
-                });
-            })
-            ->latest()
-            ->get()
-            ->groupBy('date');
+      return SchServiceBooking::query()
+        ->select('date', 'start_time', 'end_time', 'cmn_branch_id', 'sch_service_id')
+        ->whereIn('status', [0, 1, 2, 4]) 
+        ->when($booking_start && $booking_end, function ($query) use ($booking_start, $booking_end) {
+          $query->whereBetween('date', [$booking_start, $booking_end]);
+        })
+        ->when($cmn_branch_id, function ($query) use ($cmn_branch_id) {
+          $query->where('cmn_branch_id', $cmn_branch_id);
+        })
+        ->when($category_id, function ($query) use ($category_id) {
+          $query->whereHas('service', function ($q) use ($category_id) {
+            $q->where('sch_service_category_id', $category_id);
+          });
+        })
+        ->get()
+        ->groupBy('date');
     }
 
     /**
@@ -165,39 +165,76 @@ class BookingController extends Controller
         return $allHours;
     }
 
+
+
     /**
      * ? Filter available time slots by excluding booked ones.
      */
-    private function filterAvailableSlots($fields, $bookedSlots, $booking_start, $booking_end, $start_time, $end_time)
-    {
-        $availableSlots = [];
-        $allHours = $this->generateTimeSlots();
+ private function filterAvailableSlots($fields, $bookedSlots, $booking_start, $booking_end, $start_time = null, $end_time = null)
+{
+    $availableSlots = [];
+    $allHours = $this->generateTimeSlots();
 
-        foreach ($fields as $field) {
-            for ($date = Carbon::parse($booking_start); $date->lte(Carbon::parse($booking_end)); $date->addDay()) {
-                $dateStr = $date->format('Y-m-d');
+    // أولًا: نحول المواعيد المحجوزة إلى هيكل سهل للبحث
+    $blockedSlots = [];
+    foreach ($bookedSlots as $date => $slots) {
+        foreach ($slots as $slot) {
+            $dateStr = Carbon::parse($date)->format('Y-m-d');
+            $blockedSlots[$dateStr][] = [
+                'start' => Carbon::parse($slot->start_time)->format('H:i:s'),
+                'end' => Carbon::parse($slot->end_time)->format('H:i:s'),
+                'branch_id' => $slot->cmn_branch_id,
+                'service_id' => $slot->sch_service_id
+            ];
+        }
+    }
 
-                $filteredSlots = array_filter($allHours, function ($slot) use ($bookedSlots, $dateStr, $start_time, $end_time) {
-                    foreach ($bookedSlots[$dateStr] ?? [] as $booked) {
-                        if (
-                            ($slot['start_time'] >= $booked->start_time && $slot['start_time'] < $booked->end_time) ||
-                            ($slot['end_time'] > $booked->start_time && $slot['end_time'] <= $booked->end_time)
-                        ) {
-                            return false;
-                        }
+    foreach ($fields as $field) {
+        $employees = SchEmployee::where('cmn_branch_id', $field->id)->get();
+        $employeeIds = $employees->pluck('id')->toArray();
+        $employeeNames = $employees->pluck('full_name')->toArray();
+
+        for ($date = Carbon::parse($booking_start); $date->lte(Carbon::parse($booking_end)); $date->addDay()) {
+            $dateStr = $date->format('Y-m-d');
+
+            foreach ($allHours as $slot) {
+                $slotStart = $slot['start_time'];
+                $slotEnd = $slot['end_time'];
+
+                // فلترة حسب الوقت المطلوب لو موجود
+                if ($start_time && $end_time) {
+                    if ($slotStart < $start_time || $slotEnd > $end_time) {
+                        continue;
                     }
-                    return (!$start_time || !$end_time) || ($slot['start_time'] >= $start_time && $slot['end_time'] <= $end_time);
-                });
+                }
 
-                foreach ($filteredSlots as $slot) {
-                    foreach ($field->schServiceCategories as $category) {
-                        foreach ($category->services as $service) {
+                // نتحقق من كل خدمة في النادي
+                foreach ($field->schServiceCategories as $category) {
+                    foreach ($category->services as $service) {
+                        $isBlocked = false;
+
+                        // نتحقق إذا كان هذا الموعد محجوز لهذه الخدمة في هذا الفرع
+                        if (isset($blockedSlots[$dateStr])) {
+                            foreach ($blockedSlots[$dateStr] as $blocked) {
+                                if ($blocked['branch_id'] == $field->id && 
+                                    $blocked['service_id'] == $service->id &&
+                                    $blocked['start'] == $slotStart && 
+                                    $blocked['end'] == $slotEnd) {
+                                    $isBlocked = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!$isBlocked) {
                             $availableSlots[] = [
                                 'date' => $dateStr,
-                                'start_time' => $slot['start_time'],
-                                'end_time' => $slot['end_time'],
+                                'start_time' => $slotStart,
+                                'end_time' => $slotEnd,
                                 'club_id' => $field->id,
                                 'club' => $field->name,
+                                'employees' => $employeeIds,
+                                'employees_name' => $employeeNames,
                                 'category_id' => $category->id,
                                 'category_name' => $category->name,
                                 'service_id' => $service->id,
@@ -211,9 +248,10 @@ class BookingController extends Controller
                 }
             }
         }
-
-        return $availableSlots;
     }
+
+    return $availableSlots;
+}
 
     /**
      * Paginate the available slots before returning the response.
@@ -293,7 +331,6 @@ class BookingController extends Controller
     public function myBookings(Request $request)
     {
         $user = Auth::guard('api')->user();
-
         $bookings = $user->customer->bookings()
             ->with('branch', 'branch.zone', 'service', 'paymentTypes', 'service.category')
             ->where('status', '!=', 'canceled')
@@ -306,8 +343,7 @@ class BookingController extends Controller
                 if (in_array($filterValue, [0, 1, 2, 3, 4])) {
                     $query->where('status', $filterValue);
                 }
-            })
-            ->orderBy('date', 'desc')
+            })->orderBy('id', 'desc')
             ->paginate(10);
 
         $bookings->getCollection()->transform(function ($booking) {
@@ -348,7 +384,7 @@ class BookingController extends Controller
 
         // Get all booked slots
         $bookedSlots = $this->getBookings($booking_start, $booking_end, $start_time, $end_time, $cmn_branch_id, $category_id);
-
+       
         // Get field data
         $fields = $this->getFields($cmn_branch_id, $category_id);
 
@@ -468,6 +504,7 @@ class BookingController extends Controller
         $employeeId = $validated['employee_id'];
         $serviceId = $validated['service_id'];
         $serviceBranchId = $validated['branch_id'];
+        $is_monthly = $validated['is_monthly'] ?? 0;
         $managerID = DB::table('sec_user_branches')->where('cmn_branch_id', $serviceBranchId)->first()->user_id;
         DB::beginTransaction();
         try {
@@ -485,25 +522,23 @@ class BookingController extends Controller
             $couponCode = $validated['coupon_code'] ?? null;
 
             $customerId = 0;
-            $customer;
+            $customer = null;
             if (auth()->check()) {
-              // $customer = CmnCustomer::where('user_id', Auth::guard('api')->user()->id)->select('id', 'phone_no','user_id')->first();
-
-                $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
+              $customer = CmnCustomer::where('user_id', auth()->user()->id)
+                ->orWhere('phone_no',$phoneNo)
+                ->first();
                 if ($paymentType == PaymentType::UserBalance) {
                     $userBalance = auth()->user()->balance();
                     if ($userBalance === null) {
                         throw new ErrorException(__('messages.You do not have enough balance in your account'));
                     }
                 }
-
             } else {
                 if ($paymentType == PaymentType::UserBalance) {
                     throw new ErrorException(__('messages.You can\'t make payment by user balance without login try another one'));
                 }
                 $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
             }
-          
             if ($customer !== null) {
                 $customerId = $customer->id;
             } else {
@@ -535,6 +570,9 @@ class BookingController extends Controller
             if ($customerId == 0) {
                 throw new ErrorException(__('messages.Failed to save or get customer'));
             }
+          
+          
+
 
             $serviceList = [];
             $serviceTotalAmount = 0;
@@ -548,18 +586,14 @@ class BookingController extends Controller
             $serviceEndTime = $end_time;
 
             if ($serviceCharge === null) {
-                throw new ErrorException(
-                    __('messages.The selected service is not available at the chosen time. Please select a different time.') .
-                    " [التاريخ: {$serviceDate}, من: {$serviceStartTime} إلى: {$serviceEndTime}]"
-                );
+                return response()->json(['status'=>"false" , 'data'=> __('messages.The selected service is not available at the chosen time. Please select a different time.') .
+                    " [التاريخ: {$serviceDate}, من: {$serviceStartTime} إلى: {$serviceEndTime}]"],400);
             }
 
             $bookingRepo = new BookingRepository();
             if ($bookingRepo->serviceIsAvaiable($serviceId, $employeeId, $serviceDate, $serviceStartTime, $serviceEndTime, true) > 0) {
-                throw new ErrorException(
-                    __('messages.The selected service is not available at the chosen time. Please select a different time.') .
-                    " [التاريخ: {$serviceDate}, من: {$serviceStartTime} إلى: {$serviceEndTime}]"
-                );
+                return response()->json(['status'=>"false" , 'data'=>  __('messages.The selected service is not available at the chosen time. Please select a different time.') .
+                    " [التاريخ: {$serviceDate}, من: {$serviceStartTime} إلى: {$serviceEndTime}]"],400);
             }
 
            $serviceStatus = $status 
@@ -568,6 +602,7 @@ class BookingController extends Controller
                 : ServiceStatus::Processing);
 
             $serviceTotalAmount += $serviceCharge->fees;
+
 
             $serviceList[] = [
                 'cmn_branch_id' => $serviceBranchId,
@@ -589,7 +624,7 @@ class BookingController extends Controller
             ];
 
             $payableAmount = $serviceTotalAmount;
-
+             
             if ($paymentType == PaymentType::UserBalance) {
                 $userBalance = auth()->user()->balance();
                 if ($userBalance < $payableAmount) {
@@ -603,6 +638,9 @@ class BookingController extends Controller
                 $couponDiscount = $couponRepo->validateAndGetCouponValue(auth()->id(), $couponCode, $serviceTotalAmount);
             }
             $payableAmount -= $couponDiscount;
+           if($is_monthly == 1){
+                return  $this->weeklyBooking($serviceList ,$paidAmount ,$paymentType,$customer,$fullName, $phoneNo);  
+            }
             $serviceBookingInfo = SchServiceBookingInfo::create([
                 'booking_date' => Carbon::now(),
                 'cmn_customer_id' => $customerId,
@@ -614,15 +652,67 @@ class BookingController extends Controller
                 'coupon_code' => $couponCode,
                 'coupon_discount' => $couponDiscount,
                 'remarks' => $validated['service_remarks'] ?? null,
+                'is_monthly' => 0,
+				'is_monthly_active' => 0,
                 'created_by' => auth()->id()
             ]);
 
             $serviceBookingInfo->serviceBookings()->attach($serviceList);
 
             DB::commit();
-            if ($paymentType == PaymentType::LocalPayment) {
+           if ($paymentType == PaymentType::LocalPayment) {
                 //? todo send notification to customer 
                 $this->sendBookingDetails($phoneNo, $fullName, $serviceBookingInfo , $paymentType);
+                $serviceBooking = SchServiceBooking::where('sch_service_booking_info_id', $serviceBookingInfo->id)->first();
+                $serviceAmount = $serviceBooking->service_amount;
+                $paymentStatus = ServicePaymentStatus::Unpaid;
+                $serviceStatus = ServiceStatus::Pending;
+            if (auth()->user()->user_type != UserType::WebsiteUser) {
+                if ($paidAmount == $serviceAmount) {
+                    $paymentStatus = ServicePaymentStatus::Paid;
+                    $serviceStatus = ServiceStatus::Done;
+                } elseif ($paidAmount > 0 && $paidAmount < $serviceAmount) {
+                    $paymentStatus = ServicePaymentStatus::Unpaid;
+                    $serviceStatus = ServiceStatus::Processing;
+                }
+            } else {
+                $paymentStatus = ServicePaymentStatus::Unpaid;
+                $serviceStatus = ServiceStatus::Processing;
+                $paidAmount = 0; 
+            }
+                $serviceBooking->update([
+                    'paid_amount'     => $paidAmount,
+                    'payment_status'  => $paymentStatus,
+                    'status'          => $serviceStatus,
+                ]);
+
+               $branch = CmnBranch::find($serviceBranchId);
+               $owner = SecUserBranch::where('cmn_branch_id',$branch->id)->first();
+               $owner = User::find($owner->user_id);
+               if($customer != null){
+                //? todo send notification to customer 
+                $user = User::where('phone_number',$customer->phone_no)->first() ?? $customer->user;
+                SocketNotify($user->id, $branch->name, [
+                    'msg' => __('messages.Your booking has been confirmed'),
+                    'receiver' => $user->username,
+                    'sender' =>  $branch->name,
+                    'booking_id' => $serviceBooking,
+                    'branch_id' => $branch,
+                    'phone_number' => $user->phoneNo,
+                    'user_type' => $user->user_type,
+                    'latitude' => $branch->lat,
+                    'longitude' => $branch->long,
+                    'status' => ServiceStatus::Done
+                ]);
+                   Notification::send($user, new ServiceOrderNotification($serviceBooking, $user));
+                   Notification::send(
+                     auth()->user()->user_type != 1 ? $owner : auth()->user(),
+                     new ServiceOrderNotification($serviceBooking, auth()->user()->user_type != 1 ? $owner : auth()->user())
+                   );
+
+                // $user->notify(new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
+                Notification::send($user, new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
+               }
                 return response()->json(['status' => 'true', 'paymentType' => 'localPayment', 'data' => "Successfully saved"], 200);
             } else {
                 $paymentRepo = new PaymentRepository();
@@ -642,11 +732,10 @@ class BookingController extends Controller
                     'payment_status' => ServicePaymentStatus::Paid,
                     'status' => ServiceStatus::Done,
                 ]);
-              
               $branch = CmnBranch::find($serviceBranchId);
                if($customer != null){
                 //? todo send notification to customer 
-                $user = $customer->user ?? User::where('phone_number',$customer->phone_no)->first();
+                $user = User::where('phone_number',$customer->phone_no)->first() ?? $customer->user;
                 SocketNotify($user->id, $branch->name, [
                     'msg' => __('messages.Your booking has been confirmed'),
                     'receiver' => $user->username,
@@ -869,7 +958,7 @@ class BookingController extends Controller
                 );
             }
 
-            $dataCollection = collect($data);
+            $dataCollection = collect($data)->sortByDesc('id')->values();
             $paginatedData = $this->paginateCollection($dataCollection, $request);
 
             return response()->json([
@@ -1093,6 +1182,139 @@ class BookingController extends Controller
 
         return Validator::make($request->all(), $rules, $messages);
     }
+  
+  
+  
+  
+  
+  
+      private function notifyBooking(SchServiceBookingInfo $bookingInfo, $paymentType, $customer, $phoneNo, $fullName)
+    {
+        $serviceBooking = SchServiceBooking::where('sch_service_booking_info_id', $bookingInfo->id)->first();
+        $branch = CmnBranch::find($serviceBooking->cmn_branch_id ?? $bookingInfo->branch_id ?? null);
+        $user = User::where('phone_number', $customer->phone_no)->first() ?? $customer->user;
+        $authUser = Auth::user();
+
+        // 1. Send socket
+        if ($user) {
+            SocketNotify($user->id, $branch->name ?? 'Branch', [
+                'msg' => __('messages.Your booking has been confirmed'),
+                'receiver' => $user->username,
+                'sender' => $branch->name ?? 'Branch',
+                'booking_id' => $serviceBooking,
+                'branch_id' => $branch,
+                'phone_number' => $user->phoneNo,
+                'user_type' => $user->user_type,
+                'latitude' => $branch->lat ?? '',
+                'longitude' => $branch->long ?? '',
+                'status' => $serviceBooking->status,
+            ]);
+        }
+
+        // 2. Notification to user
+        Notification::send($user, new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
+        Notification::send($authUser, new ServiceOrderNotification($serviceBooking, $authUser));
+
+        // 3. WhatsApp message
+        $this->sendBookingDetails($phoneNo, $fullName, $bookingInfo, $paymentType);
+
+        // 4. Notify admins (only for Online Payment, or pass flag)
+        $userstobenotified = [];
+        $users = User::where('user_type', operator: 1)->get();
+        foreach ($users as $admin) {
+            if ($admin->is_sys_adm || $admin->sch_employee_id == $serviceBooking->sch_employee_id) {
+                $userstobenotified[] = $admin;
+            }
+        }
+
+        $userstobenotified[] = $authUser;
+
+        $bookings = app(BookingRepository::class)->getServiceInvoice($bookingInfo->id)->order_details;
+        foreach ($bookings as $book) {
+            Notification::send($userstobenotified, new ServiceOrderNotification($book, $authUser));
+            event(new BookingCreated($book, $userstobenotified, $authUser));
+        }
+    }
+
+public function weeklyBooking(array $serviceList, float $payableAmount, int $paymentType, CmnCustomer $customer, string $fullName, string $phoneNo)
+{
+    try {
+        $totalAmount = $serviceList[0]['service_amount'];
+        $customerId = $serviceList[0]['cmn_customer_id'];
+        $serviceDate = $serviceList[0]['date'];
+        $couponCode = $serviceList[0]['coupon_code'] ?? null;
+        $couponDiscount = $serviceList[0]['coupon_discount'] ?? 0;
+
+        $allBookings = [];
+
+        for ($i = 0; $i < 4; $i++) {
+            $currentPaid = 0;
+            if ($payableAmount >= $totalAmount) {
+                $currentPaid = $totalAmount;
+                $payableAmount -= $totalAmount;
+            } elseif ($payableAmount > 0) {
+                $currentPaid = $payableAmount;
+                $payableAmount = 0;
+            }
+
+            $serviceDateForWeek = Carbon::parse($serviceDate)->addWeeks($i)->format('Y-m-d');
+
+            $service = $serviceList;
+            $service[0]['date'] = $serviceDateForWeek;
+            $service[0]['paid_amount'] = $currentPaid;
+            $service[0]['payment_status'] = match (true) {
+                $currentPaid >= $totalAmount => ServicePaymentStatus::Paid,
+                $currentPaid > 0 => ServicePaymentStatus::PartialPaid,
+                default => ServicePaymentStatus::Unpaid,
+            };
+            $service[0]['status'] = match (true) {
+                      $currentPaid >= $totalAmount => ServiceStatus::Done,
+                      $currentPaid >= 0 => ServiceStatus::Approved,
+                      default => ServiceStatus::Pending,
+                  };//$currentPaid >= $totalAmount ? ServiceStatus::Done : ServiceStatus::Processing;
+
+            $serviceBookingInfo = SchServiceBookingInfo::create([
+                'booking_date' => Carbon::now(),
+                'cmn_customer_id' => $customerId,
+                'total_amount' => $totalAmount,
+                'payable_amount' => $totalAmount,
+                'paid_amount' => $currentPaid,
+                'due_amount' => $totalAmount - $currentPaid,
+                'is_due_paid' => 0,
+                'coupon_code' => $couponCode,
+                'coupon_discount' => $couponDiscount,
+                'remarks' => $serviceList['remarks'] ?? null,
+                'is_monthly' => 1,
+                'is_monthly_active' => $i === 0 ? 1 : 0,
+                'created_by' => auth()->id()
+            ]);
+
+            $serviceBookingInfo->serviceBookings()->attach([$service[0]]);
+            DB::commit();
+
+            $allBookings[] = $serviceBookingInfo->load('serviceBookinges');
+            $this->notifyBooking($serviceBookingInfo, $paymentType, $customer, $phoneNo, $fullName);
+        }
+
+        $html = view('reports.invoice', [
+            'orders' => $allBookings,
+            'customer' => $customer,
+            'phoneNo' => $phoneNo,
+            'fullName' => $fullName,
+            'company_info' => CmnCompany::first(), // عدلها حسب شركتك
+        ])->render();
+
+        return response()->json([
+            'status' => true,
+            'html' => $html,
+            'msg' => "Save Succefully :)...!"
+        ]);
+
+    } catch (Exception $e) {
+        return response()->json(['status' => 'false', 'data' => $e->getMessage()], 500);
+    }
+}
+
 
 
 
