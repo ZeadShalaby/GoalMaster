@@ -115,6 +115,7 @@ class BookingController extends Controller
      */
     private function getBookings($booking_start, $booking_end, $start_time, $end_time, $cmn_branch_id, $category_id)
     {
+<<<<<<< HEAD
       return SchServiceBooking::query()
         ->select('date', 'start_time', 'end_time', 'cmn_branch_id', 'sch_service_id')
         ->whereIn('status', [0, 1, 2, 4]) 
@@ -131,6 +132,27 @@ class BookingController extends Controller
         })
         ->get()
         ->groupBy('date');
+=======
+        return SchServiceBooking::query()
+            ->select('date', 'start_time', 'end_time', 'cmn_branch_id')
+            ->when($booking_start && $booking_end, function ($query) use ($booking_start, $booking_end) {
+                $query->whereBetween('date', [$booking_start, $booking_end]);
+            })
+            ->when($cmn_branch_id, callback: function ($query) use ($cmn_branch_id) {
+                $query->where('cmn_branch_id', $cmn_branch_id);
+            })
+            ->when($start_time && $end_time, function ($query) use ($start_time, $end_time) {
+                $query->whereBetween('start_time', [$start_time, $end_time]);
+            })
+            ->when($category_id, function ($query) use ($category_id) {
+                $query->whereHas('service', function ($q) use ($category_id) {
+                    $q->where('sch_service_category_id', $category_id);
+                });
+            })
+            ->latest()
+            ->get()
+            ->groupBy('date');
+>>>>>>> e510bd7e3567d51140dc35cca5a1d97a718d8f59
     }
 
     /**
@@ -522,23 +544,34 @@ class BookingController extends Controller
             $couponCode = $validated['coupon_code'] ?? null;
 
             $customerId = 0;
-            $customer = null;
+            $customer;
             if (auth()->check()) {
+<<<<<<< HEAD
               $customer = CmnCustomer::where('user_id', auth()->user()->id)
                 ->orWhere('phone_no',$phoneNo)
                 ->first();
+=======
+              // $customer = CmnCustomer::where('user_id', Auth::guard('api')->user()->id)->select('id', 'phone_no','user_id')->first();
+
+                $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
+>>>>>>> e510bd7e3567d51140dc35cca5a1d97a718d8f59
                 if ($paymentType == PaymentType::UserBalance) {
                     $userBalance = auth()->user()->balance();
                     if ($userBalance === null) {
                         throw new ErrorException(__('messages.You do not have enough balance in your account'));
                     }
                 }
+
             } else {
                 if ($paymentType == PaymentType::UserBalance) {
                     throw new ErrorException(__('messages.You can\'t make payment by user balance without login try another one'));
                 }
                 $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
             }
+<<<<<<< HEAD
+=======
+          
+>>>>>>> e510bd7e3567d51140dc35cca5a1d97a718d8f59
             if ($customer !== null) {
                 $customerId = $customer->id;
             } else {
@@ -727,10 +760,15 @@ class BookingController extends Controller
                     'payment_status' => ServicePaymentStatus::Paid,
                     'status' => ServiceStatus::Done,
                 ]);
+              
               $branch = CmnBranch::find($serviceBranchId);
                if($customer != null){
                 //? todo send notification to customer 
+<<<<<<< HEAD
                 $user = User::where('phone_number',$customer->phone_no)->first() ?? $customer->user;
+=======
+                $user = $customer->user ?? User::where('phone_number',$customer->phone_no)->first();
+>>>>>>> e510bd7e3567d51140dc35cca5a1d97a718d8f59
                 SocketNotify($user->id, $branch->name, [
                     'msg' => __('messages.Your booking has been confirmed'),
                     'receiver' => $user->username,
