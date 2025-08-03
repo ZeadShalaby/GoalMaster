@@ -24,6 +24,7 @@ class ManagerController extends Controller
                 'topService' => $dashboardRepo->getTopServices(),
                 'totalForgevin' => $dashboardRepo->getTotalForgiveness(),
                 'totalIncome' => $dashboardRepo->getTotalIncome(),
+                'totalDue' => $dashboardRepo->getTotalDue(),
             ];
             return response()->json(['status'=>'true' , 'data'=>$rtrData], 200);
         } catch (Exception $ex) {

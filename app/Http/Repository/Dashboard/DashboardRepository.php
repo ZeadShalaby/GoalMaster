@@ -280,14 +280,32 @@ class DashboardRepository
         $branchIds = $br->getUserBranch()->pluck('cmn_branch_id')->toArray();
         $today = now()->toDateString();
 
-        $todayQuery = DB::table('sch_service_bookings')
-            ->selectRaw('SUM(paid_amount) as income, "today" as type')
+        $todayQuery = SchServiceBooking::selectRaw('SUM(paid_amount) as income, "today" as type')
             ->where('date', $today)
             ->where('status', ServiceStatus::Done)
             ->whereIn('cmn_branch_id', $branchIds);
 
-        $totalQuery = DB::table('sch_service_bookings')
-            ->selectRaw('SUM(paid_amount) as income, "total" as type')
+        $totalQuery = SchServiceBooking::selectRaw('SUM(paid_amount) as income, "total" as type')
+            ->where('status', ServiceStatus::Done)
+            ->whereIn('cmn_branch_id', $branchIds);
+
+        $result = $todayQuery->unionAll($totalQuery)->get();
+
+        return $result;
+    }
+
+    public function getTotalDue()
+    {
+        $br = new Controller();
+        $branchIds = $br->getUserBranch()->pluck('cmn_branch_id')->toArray();
+        $today = now()->toDateString();
+
+        $todayQuery = SchServiceBooking::selectRaw('SUM(service_amount - paid_amount) as due, "today" as type')
+            ->where('date', $today)
+            ->where('status', ServiceStatus::Done)
+            ->whereIn('cmn_branch_id', $branchIds);
+
+        $totalQuery =SchServiceBooking::selectRaw('SUM(service_amount - paid_amount) as due, "total" as type')
             ->where('status', ServiceStatus::Done)
             ->whereIn('cmn_branch_id', $branchIds);
 
