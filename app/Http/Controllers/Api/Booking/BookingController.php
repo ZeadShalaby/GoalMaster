@@ -1246,84 +1246,189 @@ class BookingController extends Controller
         }
     }
 
-public function weeklyBooking(array $serviceList, float $payableAmount, int $paymentType, CmnCustomer $customer, string $fullName, string $phoneNo)
-{
-    try {
-        $totalAmount = $serviceList[0]['service_amount'];
-        $customerId = $serviceList[0]['cmn_customer_id'];
-        $serviceDate = $serviceList[0]['date'];
-        $couponCode = $serviceList[0]['coupon_code'] ?? null;
-        $couponDiscount = $serviceList[0]['coupon_discount'] ?? 0;
 
-        $allBookings = [];
 
-        for ($i = 0; $i < 4; $i++) {
-            $currentPaid = 0;
-            if ($payableAmount >= $totalAmount) {
-                $currentPaid = $totalAmount;
-                $payableAmount -= $totalAmount;
-            } elseif ($payableAmount > 0) {
-                $currentPaid = $payableAmount;
-                $payableAmount = 0;
+    public function weeklyBooking(array $serviceList, float $payableAmount, int $paymentType, CmnCustomer $customer, string $fullName, string $phoneNo)
+    {
+        try {
+            DB::beginTransaction();
+
+            $totalAmount = $serviceList[0]['service_amount'];
+            $customerId = $serviceList[0]['cmn_customer_id'];
+            $serviceDate = $serviceList[0]['date'];
+            $couponCode = $serviceList[0]['coupon_code'] ?? null;
+            $couponDiscount = $serviceList[0]['coupon_discount'] ?? 0;
+
+            $allBookings = [];
+            $bookedCount = 0;
+            $weekOffset = 0;
+
+            while ($bookedCount < 4) {
+                $serviceDateForWeek = Carbon::parse($serviceDate)->addWeeks($weekOffset)->format('Y-m-d');
+
+                //? Check if customer already has booking on this date
+                $existingBooking = SchServiceBooking::where('cmn_customer_id', '!=', $customerId)
+                    ->where('date', $serviceDateForWeek)
+                    ->where('status', '!=', ServiceStatus::Cancel) // مثلاً لو فيه status ملغي متحسبوش
+                    ->exists();
+
+                $weekOffset++;
+
+                if ($existingBooking) {
+                    $user = User::where('phone_number', $customer->phone_no)->first() ?? $customer->user; 
+                    Notification::send($user, new ServiceOrderNotification($serviceDateForWeek, $user));
+                    continue; //? skip this week
+                }
+
+                //? Handle payment logic
+                $currentPaid = 0;
+                if ($payableAmount >= $totalAmount) {
+                    $currentPaid = $totalAmount;
+                    $payableAmount -= $totalAmount;
+                } elseif ($payableAmount > 0) {
+                    $currentPaid = $payableAmount;
+                    $payableAmount = 0;
+                }
+
+                $service = $serviceList;
+                $service[0]['date'] = $serviceDateForWeek;
+                $service[0]['paid_amount'] = $currentPaid;
+                $service[0]['payment_status'] = match (true) {
+                    $currentPaid >= $totalAmount => ServicePaymentStatus::Paid,
+                    $currentPaid > 0 => ServicePaymentStatus::PartialPaid,
+                    default => ServicePaymentStatus::Unpaid,
+                };
+                $service[0]['status'] = match (true) {
+                    $currentPaid >= $totalAmount => ServiceStatus::Done,
+                    $currentPaid >= 0 => ServiceStatus::Approved,
+                    default => ServiceStatus::Pending,
+                };
+
+                $serviceBookingInfo = SchServiceBookingInfo::create([
+                    'booking_date' => Carbon::now(),
+                    'cmn_customer_id' => $customerId,
+                    'total_amount' => $totalAmount,
+                    'payable_amount' => $totalAmount,
+                    'paid_amount' => $currentPaid,
+                    'due_amount' => $totalAmount - $currentPaid,
+                    'is_due_paid' => 0,
+                    'coupon_code' => $couponCode,
+                    'coupon_discount' => $couponDiscount,
+                    'remarks' => $serviceList['remarks'] ?? null,
+                    'is_monthly' => 1,
+                    'is_monthly_active' => $bookedCount === 0 ? 1 : 0,
+                    'created_by' => auth()->id()
+                ]);
+
+                $serviceBookingInfo->serviceBookings()->attach([$service[0]]);
+                DB::commit();
+
+                $allBookings[] = $serviceBookingInfo->load('serviceBookinges');
+                $this->notifyBooking($serviceBookingInfo, $paymentType, $customer, $phoneNo, $fullName);
+
+                $bookedCount++;
             }
 
-            $serviceDateForWeek = Carbon::parse($serviceDate)->addWeeks($i)->format('Y-m-d');
+            $html = view('reports.invoice', [
+                'orders' => $allBookings,
+                'customer' => $customer,
+                'phoneNo' => $phoneNo,
+                'fullName' => $fullName,
+                'company_info' => CmnCompany::first(),
+            ])->render();
 
-            $service = $serviceList;
-            $service[0]['date'] = $serviceDateForWeek;
-            $service[0]['paid_amount'] = $currentPaid;
-            $service[0]['payment_status'] = match (true) {
-                $currentPaid >= $totalAmount => ServicePaymentStatus::Paid,
-                $currentPaid > 0 => ServicePaymentStatus::PartialPaid,
-                default => ServicePaymentStatus::Unpaid,
-            };
-            $service[0]['status'] = match (true) {
-                      $currentPaid >= $totalAmount => ServiceStatus::Done,
-                      $currentPaid >= 0 => ServiceStatus::Approved,
-                      default => ServiceStatus::Pending,
-                  };//$currentPaid >= $totalAmount ? ServiceStatus::Done : ServiceStatus::Processing;
-
-            $serviceBookingInfo = SchServiceBookingInfo::create([
-                'booking_date' => Carbon::now(),
-                'cmn_customer_id' => $customerId,
-                'total_amount' => $totalAmount,
-                'payable_amount' => $totalAmount,
-                'paid_amount' => $currentPaid,
-                'due_amount' => $totalAmount - $currentPaid,
-                'is_due_paid' => 0,
-                'coupon_code' => $couponCode,
-                'coupon_discount' => $couponDiscount,
-                'remarks' => $serviceList['remarks'] ?? null,
-                'is_monthly' => 1,
-                'is_monthly_active' => $i === 0 ? 1 : 0,
-                'created_by' => auth()->id()
+            return response()->json([
+                'status' => true,
+                'html' => $html,
+                'msg' => "Save Successfully :)...!"
             ]);
 
-            $serviceBookingInfo->serviceBookings()->attach([$service[0]]);
-            DB::commit();
-
-            $allBookings[] = $serviceBookingInfo->load('serviceBookinges');
-            $this->notifyBooking($serviceBookingInfo, $paymentType, $customer, $phoneNo, $fullName);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['status' => 'false', 'data' => $e->getMessage()], 500);
         }
-
-        $html = view('reports.invoice', [
-            'orders' => $allBookings,
-            'customer' => $customer,
-            'phoneNo' => $phoneNo,
-            'fullName' => $fullName,
-            'company_info' => CmnCompany::first(), // عدلها حسب شركتك
-        ])->render();
-
-        return response()->json([
-            'status' => true,
-            'html' => $html,
-            'msg' => "Save Succefully :)...!"
-        ]);
-
-    } catch (Exception $e) {
-        return response()->json(['status' => 'false', 'data' => $e->getMessage()], 500);
     }
-}
+
+
+
+// public function weeklyBooking(array $serviceList, float $payableAmount, int $paymentType, CmnCustomer $customer, string $fullName, string $phoneNo)
+// {
+//     try {
+//         $totalAmount = $serviceList[0]['service_amount'];
+//         $customerId = $serviceList[0]['cmn_customer_id'];
+//         $serviceDate = $serviceList[0]['date'];
+//         $couponCode = $serviceList[0]['coupon_code'] ?? null;
+//         $couponDiscount = $serviceList[0]['coupon_discount'] ?? 0;
+
+//         $allBookings = [];
+
+//         for ($i = 0; $i < 4; $i++) {
+//             $currentPaid = 0;
+//             if ($payableAmount >= $totalAmount) {
+//                 $currentPaid = $totalAmount;
+//                 $payableAmount -= $totalAmount;
+//             } elseif ($payableAmount > 0) {
+//                 $currentPaid = $payableAmount;
+//                 $payableAmount = 0;
+//             }
+
+//             $serviceDateForWeek = Carbon::parse($serviceDate)->addWeeks($i)->format('Y-m-d');
+
+//             $service = $serviceList;
+//             $service[0]['date'] = $serviceDateForWeek;
+//             $service[0]['paid_amount'] = $currentPaid;
+//             $service[0]['payment_status'] = match (true) {
+//                 $currentPaid >= $totalAmount => ServicePaymentStatus::Paid,
+//                 $currentPaid > 0 => ServicePaymentStatus::PartialPaid,
+//                 default => ServicePaymentStatus::Unpaid,
+//             };
+//             $service[0]['status'] = match (true) {
+//                       $currentPaid >= $totalAmount => ServiceStatus::Done,
+//                       $currentPaid >= 0 => ServiceStatus::Approved,
+//                       default => ServiceStatus::Pending,
+//                   };//$currentPaid >= $totalAmount ? ServiceStatus::Done : ServiceStatus::Processing;
+
+//             $serviceBookingInfo = SchServiceBookingInfo::create([
+//                 'booking_date' => Carbon::now(),
+//                 'cmn_customer_id' => $customerId,
+//                 'total_amount' => $totalAmount,
+//                 'payable_amount' => $totalAmount,
+//                 'paid_amount' => $currentPaid,
+//                 'due_amount' => $totalAmount - $currentPaid,
+//                 'is_due_paid' => 0,
+//                 'coupon_code' => $couponCode,
+//                 'coupon_discount' => $couponDiscount,
+//                 'remarks' => $serviceList['remarks'] ?? null,
+//                 'is_monthly' => 1,
+//                 'is_monthly_active' => $i === 0 ? 1 : 0,
+//                 'created_by' => auth()->id()
+//             ]);
+
+//             $serviceBookingInfo->serviceBookings()->attach([$service[0]]);
+//             DB::commit();
+
+//             $allBookings[] = $serviceBookingInfo->load('serviceBookinges');
+//             $this->notifyBooking($serviceBookingInfo, $paymentType, $customer, $phoneNo, $fullName);
+//         }
+
+//         $html = view('reports.invoice', [
+//             'orders' => $allBookings,
+//             'customer' => $customer,
+//             'phoneNo' => $phoneNo,
+//             'fullName' => $fullName,
+//             'company_info' => CmnCompany::first(), // عدلها حسب شركتك
+//         ])->render();
+
+//         return response()->json([
+//             'status' => true,
+//             'html' => $html,
+//             'msg' => "Save Succefully :)...!"
+//         ]);
+
+//     } catch (Exception $e) {
+//         return response()->json(['status' => 'false', 'data' => $e->getMessage()], 500);
+//     }
+// }
 
 
 
