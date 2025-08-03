@@ -345,7 +345,7 @@
                             </div>
                         </li>
                         @endforeach
-
+                         @if(Auth::user()->is_sys_adm == 1)
                             <li class="nav-item">
                                 <a data-toggle="collapse" href="#sliderMenu" aria-expanded="false">
                                     <i class="fas fa-sliders-h"></i>
@@ -363,6 +363,7 @@
                                     </ul>
                                 </div>
                             </li>
+                            @endif
 
 
 

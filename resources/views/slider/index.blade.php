@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+  @if(Auth::user()->is_sys_adm == 1)
+
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
@@ -113,4 +115,5 @@
             @endif
         });
     </script>
+    @endif
 @endsection

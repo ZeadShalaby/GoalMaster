@@ -23,6 +23,7 @@ class ManagerController extends Controller
                 'incomAndOtherStatistics' => $dashboardRepo->getIncomeAndOtherStatistics(),
                 'topService' => $dashboardRepo->getTopServices(),
                 'totalForgevin' => $dashboardRepo->getTotalForgiveness(),
+                'totalIncome' => $dashboardRepo->getTotalIncome(),
             ];
             return response()->json(['status'=>'true' , 'data'=>$rtrData], 200);
         } catch (Exception $ex) {

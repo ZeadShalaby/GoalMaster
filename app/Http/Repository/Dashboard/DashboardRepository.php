@@ -273,4 +273,26 @@ class DashboardRepository
             'DoneService' => SchServiceBooking::where('status', 4)->count()
         ];
     }
+
+    public function getTotalIncome()
+    {
+        $br = new Controller();
+        $branchIds = $br->getUserBranch()->pluck('cmn_branch_id')->toArray();
+        $today = now()->toDateString();
+
+        $todayQuery = DB::table('sch_service_bookings')
+            ->selectRaw('SUM(paid_amount) as income, "today" as type')
+            ->where('date', $today)
+            ->where('status', ServiceStatus::Done)
+            ->whereIn('cmn_branch_id', $branchIds);
+
+        $totalQuery = DB::table('sch_service_bookings')
+            ->selectRaw('SUM(paid_amount) as income, "total" as type')
+            ->where('status', ServiceStatus::Done)
+            ->whereIn('cmn_branch_id', $branchIds);
+
+        $result = $todayQuery->unionAll($totalQuery)->get();
+
+        return $result;
+    }
 }

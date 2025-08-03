@@ -40,12 +40,8 @@ class ServiceOrderNotification extends Notification
      */
     public function via($notifiable)
     {
-        if($notifiable->user_type == 1){
             return ['database'];
-        }
-        else{
-            return ['mail'];
-        }
+        
     }
 
     /**
