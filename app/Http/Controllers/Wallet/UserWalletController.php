@@ -33,7 +33,7 @@ class UserWalletController extends Controller
             }
 
             // ?todo check if the sender has enough balance
-            if ($sender_wallet->balance < $validated['amount']) {
+            if ($sender_wallet->userBalance < $validated['amount']) {
                 return response()->json([
                     'status' => 'false',
                     'message' => 'Insufficient balance'
