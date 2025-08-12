@@ -24,12 +24,10 @@ class ServiceOrderNotification extends Notification
         $this->orderData = $orderData;
         $this->user = $user;
 
-        if($this->user->name){
-            $this->name = $this->user->name;
-        }
-        else{
-            $this->name = $this->user->full_name;
-        }
+       $this->name = optional($this->user)->name 
+           ?? optional($this->user)->full_name 
+           ?? 'مستخدم مجهول';
+
     }
 
     /**
