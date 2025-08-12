@@ -14,7 +14,7 @@ class UserWalletController extends Controller
     {
         $validated = $request->validated();
         $sender = Auth::guard('api')->user();
-
+         
         return DB::transaction(function () use ($validated, $sender) {
 
             $sender_wallet = $sender->userBalance()->lockForUpdate()->first();
@@ -25,15 +25,16 @@ class UserWalletController extends Controller
                 }])
                 ->first();
 
+                dd($receiver , $sender_wallet);
             if (!$receiver) {
                 return response()->json([
                     'status' => 'false',
                     'message' => 'Receiver not found'
                 ], 404);
             }
-
+            dd($sender_wallet);
             // ?todo check if the sender has enough balance
-            if ($sender_wallet->userBalance < $validated['amount']) {
+            if ($sender_wallet < $validated['amount']) {
                 return response()->json([
                     'status' => 'false',
                     'message' => 'Insufficient balance'
@@ -41,11 +42,11 @@ class UserWalletController extends Controller
             }
 
             // ?todo handle the balance update
-            $sender_wallet->userBalance -= $validated['amount'];
+            $sender_wallet -= $validated['amount'];
             $sender_wallet->save();
 
-            $receiver->wallet->userBalance += $validated['amount'];
-            $receiver->wallet->save();
+            $receiver += $validated['amount'];
+            $receiver->save();
 
             return response()->json([
                 'status' => 'true',
