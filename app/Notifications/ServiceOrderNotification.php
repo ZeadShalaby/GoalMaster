@@ -23,13 +23,18 @@ class ServiceOrderNotification extends Notification
     {
         $this->orderData = $orderData;
         $this->user = $user;
+      
+       $this->name = optional($this->user)->name 
+           ?? optional($this->user)->full_name 
+           ?? 'مستخدم مجهول';
 
-        if($this->user->name){
+
+       /* if($this->user->name){
             $this->name = $this->user->name;
         }
         else{
             $this->name = $this->user->full_name;
-        }
+        }*/
     }
 
     /**
@@ -62,7 +67,9 @@ class ServiceOrderNotification extends Notification
         return [
             'message' => "تم إضافة حجز جديد بواسطة {$this->name}",
             // 'id'=>$this->orderData['order_details'][0]['id']
-            'id'=>$this->orderData['id']
+          //  'id'=>$this->orderData['id']
+          'id' => data_get($this->orderData, 'id')
+
 
         ];
     }

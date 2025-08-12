@@ -15,22 +15,46 @@ use App\Http\Repository\Dashboard\DashboardRepository;
 class ManagerController extends Controller
 {
     public function analysis(Request $request)
-    {
-        try {
-            $dashboardRepo = new DashboardRepository();
-            $rtrData = [
-                'bookingStatus' => $dashboardRepo->getBookingStatus($request),
-                'incomAndOtherStatistics' => $dashboardRepo->getIncomeAndOtherStatistics(),
-                'topService' => $dashboardRepo->getTopServices(),
-                'totalForgevin' => $dashboardRepo->getTotalForgiveness(),
-                'totalIncome' => $dashboardRepo->getTotalIncome(),
-                'totalDue' => $dashboardRepo->getTotalDue(),
-            ];
-            return response()->json(['status'=>'true' , 'data'=>$rtrData], 200);
-        } catch (Exception $ex) {
-            return $this->apiResponse(['status' => '403', 'data' => $ex], 400);
+{
+    try {
+        $dashboardRepo = new DashboardRepository();
+
+        $incomeStats = $dashboardRepo->getIncomeAndOtherStatistics();
+        $todayPaidAndDue = $incomeStats['todayPaidAndDue'] ?? [];
+
+        $totalIncome = 0;
+        $partialDue = 0;
+        $totalDue = 0;
+
+        foreach ($todayPaidAndDue as $item) {
+            $totalIncome += floatval($item['service_amount']);
+
+            if ($item['payment_status'] == 3) {
+                $partialDue = floatval($item['service_amount']) - floatval($item['paid_amount']);
+            }
+
+            if ($item['payment_status'] == 2 && $item['status'] == 0) {
+                $totalDue += floatval($item['service_amount']);
+            }
         }
+
+        $totalDue += $partialDue;
+
+        $rtrData = [
+            'bookingStatus' => $dashboardRepo->getBookingStatus($request),
+            'incomAndOtherStatistics' => $incomeStats,
+            'topService' => $dashboardRepo->getTopServices(),
+            'totalForgevin' => $dashboardRepo->getTotalForgiveness(),
+            'TotalIncome' => round($totalIncome, 2),
+            'TotalDue' => round($totalDue, 2),
+        ];
+
+        return response()->json(['status' => 'true', 'data' => $rtrData], 200);
+    } catch (Exception $ex) {
+        return $this->apiResponse(['status' => '403', 'data' => $ex], 400);
     }
+}
+
 
 
     public function exportBookingStatusPdf(Request $request)

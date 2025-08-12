@@ -533,7 +533,6 @@ class BookingController extends Controller
               // $customer = CmnCustomer::where('user_id', Auth::guard('api')->user()->id)->select('id', 'phone_no','user_id')->first();
 
                 $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
-
                 if ($paymentType == PaymentType::UserBalance) {
                     $userBalance = auth()->user()->balance();
                     if ($userBalance === null) {
@@ -560,6 +559,7 @@ class BookingController extends Controller
                 ];
                 $cstRtrn = CmnCustomer::create($saveCustomer);
                 $customerId = $cstRtrn->id;
+                $customer = CmnCustomer::where('phone_no', $phoneNo)->first();
             }
 
             $exists = DB::table('manager_customer')
@@ -1303,7 +1303,6 @@ class BookingController extends Controller
                     $currentPaid >= 0 => ServiceStatus::Approved,
                     default => ServiceStatus::Pending,
                 };
-
                 $serviceBookingInfo = SchServiceBookingInfo::create([
                     'booking_date' => Carbon::now(),
                     'cmn_customer_id' => $customerId,
@@ -1314,7 +1313,7 @@ class BookingController extends Controller
                     'is_due_paid' => 0,
                     'coupon_code' => $couponCode,
                     'coupon_discount' => $couponDiscount,
-                    'remarks' => $serviceList['remarks'] ?? null,
+                    'remarks' => $serviceList[0]['remarks'] ?? null,
                     'is_monthly' => 1,
                     'is_monthly_active' => $bookedCount === 0 ? 1 : 0,
                     'created_by' => auth()->id()
@@ -1328,7 +1327,6 @@ class BookingController extends Controller
 
                 $bookedCount++;
             }
-
             $html = view('reports.invoice', [
                 'orders' => $allBookings,
                 'customer' => $customer,

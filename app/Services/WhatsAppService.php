@@ -26,14 +26,13 @@ class WhatsAppService
     $this->url = 'https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/bulk/';
   }
 
-  public function sendMessage($phoneNumber, $customer_name, $messageComponents)
-  {
-    $phoneNumber = 201553068530 ;//env('country_code') . $phoneNumber;
-    // $messageComponents = $messageComponents->order_details[0];
+    public function sendMessage($phoneNumber, $customer_name, $messageComponents)
+    {
+        $phoneNumber = env('country_code') . $phoneNumber;
 
-    // Convert 24-hour time format to 12-hour format with AM/PM
-    $start_time_12hr = date('g:i A', strtotime($messageComponents->start_time));
-    $end_time_12hr = date('g:i A', strtotime($messageComponents->end_time));
+        // تحويل الوقت من 24 ساعة إلى 12 ساعة
+        $start_time_12hr = date('g:i A', strtotime($messageComponents->start_time));
+        $end_time_12hr = date('g:i A', strtotime($messageComponents->end_time));
 
     switch ($messageComponents->status) {
       case 0:
