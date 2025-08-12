@@ -17,10 +17,10 @@ class UserWalletController extends Controller
 
         return DB::transaction(function () use ($validated, $sender) {
 
-            $sender_wallet = $sender->wallet()->lockForUpdate()->first();
+            $sender_wallet = $sender->userBalance()->lockForUpdate()->first();
 
             $receiver = User::where('phone_number', $validated['receiver_phone_number'])
-                ->with(['wallet' => function ($query) {
+                ->with(['userBalance' => function ($query) {
                     $query->lockForUpdate();
                 }])
                 ->first();
