@@ -25,7 +25,7 @@ class UserWalletController extends Controller
                 }])
                 ->first();
 
-                dd($receiver , $sender_wallet);
+                dd($receiver->userBalance->amount , $sender_wallet->amount);
             if (!$receiver) {
                 return response()->json([
                     'status' => 'false',
