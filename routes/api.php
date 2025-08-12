@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Card\ChargeController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Wallet\UserWalletController;
 use App\Http\Controllers\Api\Dashboard\UserController;
 use App\Http\Controllers\Api\Booking\BookingController;
 use App\Http\Controllers\Api\Dashboard\ManagerController;
@@ -47,7 +48,11 @@ Route::group(['middleware' => ['api', 'setLocale' ]], function () {
             Route::post('/update', [ProfileController::class, 'UpdateProfile']);
             Route::post('/refresh' ,[AuthController::class, 'refreshToken']);
             Route::post('/logout', [AuthController::class, 'logout']);
-            
+             
+            // ? user wallet
+            Route::group(['prefix' => "wallet"], function () {
+                Route::post('/send-money', [UserWalletController::class, 'sendMoney']);
+            });
         // ? analysis
         Route::group(['prefix' => "analysis"], function () {
             Route::get('/', [UserController::class, 'userBookingsAnalysis']);
@@ -106,7 +111,6 @@ Route::group(['middleware' => ['api', 'setLocale' ]], function () {
         });
     });
     Route::get('/dashboard/export', [ManagerController::class, 'exportBookingStatusPdf']);
-
     // ? Test
     Route::post('/send-private-message', function () {
         $data = [
