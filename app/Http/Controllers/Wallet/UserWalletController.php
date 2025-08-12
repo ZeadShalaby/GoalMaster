@@ -41,10 +41,10 @@ class UserWalletController extends Controller
             }
 
             // ?todo handle the balance update
-            $sender_wallet->balance -= $validated['amount'];
+            $sender_wallet->userBalance -= $validated['amount'];
             $sender_wallet->save();
 
-            $receiver->wallet->balance += $validated['amount'];
+            $receiver->wallet->userBalance += $validated['amount'];
             $receiver->wallet->save();
 
             return response()->json([
