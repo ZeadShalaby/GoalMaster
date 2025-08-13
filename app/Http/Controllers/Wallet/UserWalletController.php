@@ -7,51 +7,57 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WalletRequest;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+
 class UserWalletController extends Controller
 {
-   public function sendMoney(WalletRequest $request)
-    {
-        $validated = $request->validated();
-        $sender = Auth::guard('api')->user();
-         
-        return DB::transaction(function () use ($validated, $sender) {
 
-            $sender_wallet = $sender->userBalance()->lockForUpdate()->first();
 
-            $receiver = User::where('phone_number', $validated['receiver_phone_number'])
-                ->with(['userBalance' => function ($query) {
-                    $query->lockForUpdate();
-                }])
-                ->first();
+public function sendMoney(WalletRequest $request)
+{
+    $validated = $request->validated();
+    $sender = Auth::guard('api')->user();
+    $receiver = User::where('phone_number', $validated['receiver_phone_number'])->first();
 
-                dd($receiver->userBalance->amount , $sender_wallet->amount);
-            if (!$receiver) {
-                return response()->json([
-                    'status' => 'false',
-                    'message' => 'Receiver not found'
-                ], 404);
-            }
-            dd($sender_wallet);
-            // ?todo check if the sender has enough balance
-            if ($sender_wallet < $validated['amount']) {
-                return response()->json([
-                    'status' => 'false',
-                    'message' => 'Insufficient balance'
-                ], 400);
-            }
+    if (!$receiver) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Receiver not found'
+        ], 404);
+    }
 
-            // ?todo handle the balance update
-            $sender_wallet -= $validated['amount'];
-            $sender_wallet->save();
+    return DB::transaction(function () use ($validated, $sender, $receiver) {
+        
+        // قفل رصيد المرسل والمستقبل
+        $sender_balance = $sender->getBalanceWithLock();
+        $receiver_balance = $receiver->getBalanceWithLock();
 
-            $receiver += $validated['amount'];
-            $receiver->save();
-
+        // تحقق من الرصيد
+        if ($sender_balance < $validated['amount']) {
             return response()->json([
-                'status' => 'true',
-                'message' => 'Money sent successfully'
-            ]);
-        });
+                'status' => false,
+                'message' => 'Insufficient balance'
+            ], 400);
+        }
+
+        // إضافة حركة خصم للمرسل (Debit)
+        $sender->balancesApi()->create([
+            'balance_type' => 0, // 0 يعني خصم
+            'amount' => $validated['amount']
+        ]);
+
+        // إضافة حركة إضافة للمستقبل (Credit)
+        $receiver->balancesApi()->create([
+            'balance_type' => 1, // 1 يعني إضافة
+            'amount' => $validated['amount']
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Money sent successfully'
+        ]);
+    });
 }
+
+
+
 }

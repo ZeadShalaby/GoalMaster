@@ -81,6 +81,23 @@ class User extends Authenticatable implements JWTSubject
         return $this->morphMany(CmnUserBalance::class, "balanceable");
     }
 
+
+    public function balancesApi()
+    {
+        return $this->morphMany(CmnUserBalance::class, "balanceable");
+    }
+
+    public function getBalanceWithLock()
+    {
+        $balances = $this->balancesApi()->lockForUpdate()->get();
+
+        $balanceCR = $balances->where('balance_type', 1)->sum('amount');
+        $balanceDR = $balances->where('balance_type', 0)->sum('amount');
+
+        return $balanceCR - $balanceDR;
+    }
+
+
     // public function creator()
     // {
     //     return $this->belongsTo(User::class, 'created_by');
