@@ -28,11 +28,11 @@ public function sendMoney(WalletRequest $request)
 
     return DB::transaction(function () use ($validated, $sender, $receiver) {
         
-        // قفل رصيد المرسل والمستقبل
+        // ! Lock the sender's and receiver's balances
         $sender_balance = $sender->getBalanceWithLock();
         $receiver_balance = $receiver->getBalanceWithLock();
 
-        // تحقق من الرصيد
+        // ?todo check if the sender has enough balance
         if ($sender_balance < $validated['amount']) {
             return response()->json([
                 'status' => false,
@@ -40,15 +40,21 @@ public function sendMoney(WalletRequest $request)
             ], 400);
         }
 
-        // إضافة حركة خصم للمرسل (Debit)
+        // ?todo handle the balance update
         $sender->balancesApi()->create([
-            'balance_type' => 0, // 0 يعني خصم
+            'balance_type' => 0, //? 0 which means deduction
+            'balanceable_type' => User::class,
+            'balanceable_id'=> $receiver->id,
+            'user_id' => $sender->id,
             'amount' => $validated['amount']
         ]);
 
-        // إضافة حركة إضافة للمستقبل (Credit)
+        // ?todo save the transaction details if needed
         $receiver->balancesApi()->create([
-            'balance_type' => 1, // 1 يعني إضافة
+            'balance_type' => 1, //? 1 which means addition
+            'balanceable_type' => User::class,
+            'balanceable_id'=> $sender->id,
+            'user_id' => $receiver->id,
             'amount' => $validated['amount']
         ]);
 
