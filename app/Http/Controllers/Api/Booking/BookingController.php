@@ -701,6 +701,7 @@ class BookingController extends Controller
                if($customer != null){
                 //? todo send notification to customer 
                 $user = User::where('phone_number',$customer->phone_no)->first() ?? $customer->user;
+                 if($user){
                 SocketNotify($user->id, $branch->name, [
                     'msg' => __('messages.Your booking has been confirmed'),
                     'receiver' => $user->username,
@@ -713,6 +714,7 @@ class BookingController extends Controller
                     'longitude' => $branch->long,
                     'status' => ServiceStatus::Done
                 ]);
+                
                    Notification::send($user, new ServiceOrderNotification($serviceBooking, $user));
                    Notification::send(
                      auth()->user()->user_type != 1 ? $owner : auth()->user(),
@@ -721,6 +723,7 @@ class BookingController extends Controller
 
                 // $user->notify(new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
                 Notification::send($user, new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
+                 }
                }
                 return response()->json(['status' => 'true', 'paymentType' => 'localPayment', 'data' => "Successfully saved"], 200);
             } else {
@@ -745,7 +748,7 @@ class BookingController extends Controller
                if($customer != null){
                 //? todo send notification to customer 
                 $user = User::where('phone_number',$customer->phone_no)->first() ?? $customer->user;
-
+                if(user){
                 SocketNotify($user->id, $branch->name, [
                     'msg' => __('messages.Your booking has been confirmed'),
                     'receiver' => $user->username,
@@ -761,7 +764,7 @@ class BookingController extends Controller
 
                 // $user->notify(new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
                 Notification::send($user, new UserNotification($serviceBooking, __('messages.Your booking has been confirmed')));
-               }
+               }}
                 $currentUserId = Auth::id();
                 $userstobenotified = [];
                 $users = User::where('user_type', operator: 1)->get();
@@ -936,6 +939,9 @@ class BookingController extends Controller
         try {
             $validated = $request->validated();
             $bookingRepo = new BookingRepository();
+            $booking = SchServiceBooking::find($validated['id']);
+            $userBranch = SecUserBranch::where('cmn_branch_id', $booking->cmn_branch_id)->first();
+            Notification::send($userBranch->user, new ServiceOrderNotification($booking, $userBranch->user));
             return response()->json(['status' => 'true', 'data' => $bookingRepo->ChangeBookingStatusAndReturnBookingData($validated['id'], ServiceStatus::Cancel)], 200);
         } catch (ErrorException $ex) {
             return response()->json(['status' => 'false', 'data' => $ex->getMessage()], 400);
@@ -1146,7 +1152,7 @@ class BookingController extends Controller
     // ?todo customer store 
     public function customerStore(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::guard('api')->user();
         $isAdmin = $user->is_sys_adm == 1;
 
         $validator = $this->validateCustomer($request, $isAdmin);
@@ -1157,11 +1163,10 @@ class BookingController extends Controller
 
         try {
             DB::beginTransaction();
-
             $customer = $isAdmin
                 ? $this->storeCustomerAsAdmin($request)
                 : $this->storeCustomerAsManager($request, $user);
-
+ 
             DB::commit();
             return $this->apiResponse(['status' => '1', 'data' => ['cmn_customer_id' => $customer->id]], 200);
 
@@ -1276,7 +1281,9 @@ class BookingController extends Controller
 
                 if ($existingBooking) {
                     $user = User::where('phone_number', $customer->phone_no)->first() ?? $customer->user; 
+                  if($user){
                     Notification::send($user, new ServiceOrderNotification($serviceDateForWeek, $user));
+                  }
                     continue; //? skip this week
                 }
 
