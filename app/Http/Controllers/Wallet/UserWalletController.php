@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Wallet;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WalletRequest;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Customer\CmnUserBalance;
 
 class UserWalletController extends Controller
 {
@@ -65,6 +66,30 @@ public function sendMoney(WalletRequest $request)
     });
 }
 
+
+public function transaction()
+{
+    try{
+
+        $transactions = CmnUserBalance::where('balanceable_type', User::class)
+            ->where('balanceable_id', auth()->id())
+            ->lockForUpdate()
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Transactions retrieved successfully',
+            'data' => $transactions
+        ]);
+
+    }catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'An error occurred while processing the transaction',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 
 
 }

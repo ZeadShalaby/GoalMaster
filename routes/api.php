@@ -52,6 +52,7 @@ Route::group(['middleware' => ['api', 'setLocale' ]], function () {
             // ? user wallet
             Route::group(['prefix' => "wallet"], function () {
                 Route::post('/send-money', [UserWalletController::class, 'sendMoney']);
+                Route::post('/transaction', [UserWalletController::class, 'transaction']);
             });
         // ? analysis
         Route::group(['prefix' => "analysis"], function () {
